@@ -5,6 +5,7 @@ use crate::{
 };
 use std::f64;
 
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Sphere{
     center: Point,
     radius: f64,

@@ -3,7 +3,7 @@ use std::fmt;
 use std::f64;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-struct Vec3{
+pub struct Vec3{
     e: [f64; 3]
 }
 
@@ -155,3 +155,7 @@ impl Div<f64> for Vec3{
         return (1.0/t) * self;
     }
 }
+
+pub type Color = Vec3;
+#[allow(dead_code)]
+pub type Point = Vec3;

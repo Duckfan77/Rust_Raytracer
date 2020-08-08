@@ -1,6 +1,7 @@
 use std::io::{Write, stderr, stdout};
 mod vec3;
 mod color;
+mod ray;
 
 fn main() {
     //Image

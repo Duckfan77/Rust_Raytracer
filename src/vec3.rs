@@ -1,5 +1,5 @@
 use std::ops::*;
-use std::fmt::Debug;
+use std::fmt;
 use std::f64;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -95,6 +95,12 @@ impl MulAssign<f64> for Vec3{
 impl DivAssign<f64> for Vec3{
     fn div_assign(&mut self, rhs: f64){
         *self *= 1.0/rhs;
+    }
+}
+
+impl fmt::Display for Vec3{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
+        write!(f, "{} {} {}", self.e[0], self.e[1], self.e[2])
     }
 }
 

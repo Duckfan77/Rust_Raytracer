@@ -10,9 +10,9 @@ use vec3::*;
 
 fn hit_sphere(center: &Point, radius: f64, r: &ray::Ray) -> f64{
     let oc: Vec3 = r.origin() - *center;
-    let a = Vec3::dot(r.direction(), r.direction());
-    let b = 2.0 * Vec3::dot(oc, r.direction());
-    let c = Vec3::dot(oc, oc) - radius*radius;
+    let a = dot(r.direction(), r.direction());
+    let b = 2.0 * dot(oc, r.direction());
+    let c = dot(oc, oc) - radius*radius;
     let discriminant = b*b - 4.0*a*c;
     if discriminant < 0.0 {
         return -1.0
@@ -25,11 +25,11 @@ fn ray_color(r: &ray::Ray) -> Color{
     let t = hit_sphere(&Point::new(0.0, 0.0, -1.0), 0.5, r);
     if t>0.0 {
         //assume Normals are unit vectors, not enforced
-        let N = Vec3::unit_vector(r.at(t) - Vec3::new(0.0, 0.0, -1.0));
+        let N = unit_vector(r.at(t) - Vec3::new(0.0, 0.0, -1.0));
         return 0.5 * Color::new(N.x()+1.0, N.y()+1.0, N.z()+1.0);
     }
 
-    let unit_direction = Vec3::unit_vector(r.direction());
+    let unit_direction = unit_vector(r.direction());
     let t = 0.5*(unit_direction.y() + 1.0);
     return (1.0-t)*Color::new(1.0, 1.0, 1.0) + t*Color::new(0.5, 0.7, 1.0);
 }

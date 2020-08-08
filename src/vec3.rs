@@ -36,22 +36,22 @@ impl Vec3{
     pub fn length_squared(self) -> f64{
         return self.e[0]*self.e[0] + self.e[1]*self.e[1] + self.e[2]*self.e[2];
     }
+}
 
-    pub fn dot(u: Vec3, v: Vec3) -> f64{
-        return u.e[0] * v.e[0]
-             + u.e[1] * v.e[1]
-             + u.e[2] * v.e[2];
-    }
+pub fn dot(u: Vec3, v: Vec3) -> f64{
+    return u.e[0] * v.e[0]
+         + u.e[1] * v.e[1]
+         + u.e[2] * v.e[2];
+}
 
-    pub fn cross(u: Vec3, v: Vec3) -> Vec3{
-        return Vec3::new(u.e[1] * v.e[2] - u.e[2] * v.e[1],
-                         u.e[2] * v.e[0] - u.e[0] * v.e[2],
-                         u.e[0] * v.e[1] - u.e[1] * v.e[0]);
-    }
+pub fn cross(u: Vec3, v: Vec3) -> Vec3{
+    return Vec3::new(u.e[1] * v.e[2] - u.e[2] * v.e[1],
+                     u.e[2] * v.e[0] - u.e[0] * v.e[2],
+                     u.e[0] * v.e[1] - u.e[1] * v.e[0]);
+}
 
-    pub fn unit_vector(v: Vec3) -> Vec3{
-        return v / v.length();
-    }
+pub fn unit_vector(v: Vec3) -> Vec3{
+    return v / v.length();
 }
 
 impl Neg for Vec3{

@@ -5,6 +5,8 @@ use std::f64;
 mod vec3;
 mod color;
 mod ray;
+mod hittable;
+mod sphere;
 
 use vec3::*;
 

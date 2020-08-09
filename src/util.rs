@@ -1,7 +1,7 @@
 
 // Constants
-const INFINITY: f64 = f64::INFINITY;
-const PI: f64 = std::f64::consts::PI;
+pub const INFINITY: f64 = f64::INFINITY;
+pub const PI: f64 = std::f64::consts::PI;
 
 // Util Functions
 pub fn degs_to_rads(deg: f64) -> f64 {

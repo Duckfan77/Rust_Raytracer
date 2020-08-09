@@ -12,6 +12,7 @@ mod sphere;
 mod hittable_list;
 mod util;
 mod camera;
+mod materials;
 
 use vec3::*;
 use util::*;

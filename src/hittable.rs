@@ -1,10 +1,13 @@
 use crate::vec3::*;
 use crate::ray::Ray;
+use std::rc::Rc;
+use crate::materials::*;
 
 #[derive(Debug, Clone)]
 pub struct HitRecord{
     pub p: Point,
     pub normal: Vec3,
+    pub mat_ptr: Rc<dyn Material>,
     pub t: f64,
     pub front_face: bool,
 }
@@ -19,6 +22,7 @@ impl HitRecord{
         HitRecord {
             p: Point::new_e(),
             normal: Vec3::new_e(),
+            mat_ptr: Rc::new(NoHit::new()),
             t: 0.0,
             front_face: false,
         }

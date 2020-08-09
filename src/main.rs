@@ -14,20 +14,6 @@ mod util;
 use vec3::*;
 use util::*;
 
-fn hit_sphere(center: &Point, radius: f64, r: &ray::Ray) -> f64{
-    let oc: Vec3 = r.origin() - *center;
-    let a = r.direction().length_squared();
-    let half_b = dot(oc, r.direction());
-    let c = oc.length_squared() - radius*radius;
-    let discriminant = half_b*half_b - a*c;
-
-    if discriminant < 0.0 {
-        return -1.0
-    }else{
-        return (-half_b - f64::sqrt(discriminant)) / a
-    }
-}
-
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable) -> Color{
     let mut rec = hittable::HitRecord::new();
     if world.hit(r, 0.0, INFINITY, &mut rec) {

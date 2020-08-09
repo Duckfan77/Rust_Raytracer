@@ -18,6 +18,54 @@ use vec3::*;
 use util::*;
 use materials::*;
 
+fn random_scene() -> hittable_list::HittableList {
+    let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+
+    let mat_gnd: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    world.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::clone(&mat_gnd))));
+
+    for a in -11..11 {
+        let a = a as f64;
+        for b in -11..11 {
+            let b = b as f64;
+
+            let choose_mat = random_double();
+            let center = Point::new(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+
+            if (center - Point::new(4.0, 0.2, 0.0)).length() > 0.9 {
+                let mat_sphere: Rc<dyn Material>;
+
+                if choose_mat < 0.8 {
+                    // difuse
+                    let albedo = random() * random();
+                    mat_sphere = Rc::new(Lambertian::new(albedo));
+                } else if choose_mat < 0.95 {
+                    // metal
+                    let albedo = random_range(0.5, 1.0);
+                    let fuzz = random_double_range(0.0, 0.5);
+                    mat_sphere = Rc::new(Metal::new(albedo, fuzz));
+                } else {
+                    // glass
+                    mat_sphere = Rc::new(Dialectric::new(1.5));
+                }
+
+                world.add(Rc::new(sphere::Sphere::new(center, 0.2, Rc::clone(&mat_sphere))));
+            }
+        }
+    }
+
+    let mat1: Rc<dyn Material> = Rc::new(Dialectric::new(1.5));
+    world.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 1.0, 0.0), 1.0, Rc::clone(&mat1))));
+
+    let mat2: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
+    world.add(Rc::new(sphere::Sphere::new(Point::new(-4.0, 1.0, 0.0), 1.0, Rc::clone(&mat2))));
+
+    let mat3: Rc<dyn Material> = Rc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
+    world.add(Rc::new(sphere::Sphere::new(Point::new(4.0, 1.0, 0.0), 1.0, Rc::clone(&mat3))));
+
+    return world
+}
+
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
@@ -42,32 +90,21 @@ fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{
 
 fn main() {
     //Image
-    let aspect_ratio = 16.0 / 9.0;
+    let aspect_ratio = 3.0 / 2.0;
     let image_width = 400;
     let image_height = (image_width as f64 / aspect_ratio) as u32;
-    let sample_per_pixel = 100;
+    let sample_per_pixel = 500;
     let max_depth = 50;
 
     // World
-    let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
-
-    let mat_gnd: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    let mat_ctr: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.1, 0.2, 0.5)));
-    let mat_lft: Rc<dyn Material> = Rc::new(Dialectric::new(1.5));
-    let mat_rht: Rc<dyn Material> = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 1.0));
-
-    world.add(Rc::new(sphere::Sphere::new(Point::new( 0.0, -100.5, -1.0), 100.0, Rc::clone(&mat_gnd))));
-    world.add(Rc::new(sphere::Sphere::new(Point::new( 0.0,    0.0, -1.0),   0.5, Rc::clone(&mat_ctr))));
-    world.add(Rc::new(sphere::Sphere::new(Point::new(-1.0,    0.0, -1.0),   0.5, Rc::clone(&mat_lft))));
-    world.add(Rc::new(sphere::Sphere::new(Point::new(-1.0,    0.0, -1.0),  -0.4, Rc::clone(&mat_lft))));
-    world.add(Rc::new(sphere::Sphere::new(Point::new( 1.0,    0.0, -1.0),   0.5, Rc::clone(&mat_rht))));
+    let world = random_scene();
 
     // Camera
-    let lookfrom = Point::new(3.0, 3.0, 2.0);
-    let lookat = Point::new(0.0, 0.0, -1.0);
+    let lookfrom = Point::new(13.0, 2.0, 3.0);
+    let lookat = Point::new(0.0, 0.0, 0.0);
     let vup = Point::new(0.0, 1.0, 0.0);
-    let dist_to_focus = (lookfrom - lookat).length();
-    let aperture = 2.0;
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
 
     let cam = camera::Camera::new(&lookfrom, &lookat, &vup, 20.0, aspect_ratio, aperture, dist_to_focus);
 

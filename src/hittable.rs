@@ -27,6 +27,14 @@ impl HitRecord{
             front_face: false,
         }
     }
+
+    pub fn clone_into(&self, target: &mut HitRecord){
+        target.p = self.p.clone();
+        target.normal = self.normal.clone();
+        target.mat_ptr = Rc::clone(&self.mat_ptr);
+        target.t = self.t.clone();
+        target.front_face = self.front_face.clone();
+    }
 }
 
 pub trait Hittable{

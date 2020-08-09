@@ -34,11 +34,8 @@ impl Hittable for HittableList{
                 hit_anything = true;
                 closest_so_far = temp_rec.t;
 
-                //copy temp_rec into rec, couldn't figure out how else to do this. Ugly solution
-                rec.front_face = temp_rec.front_face;
-                rec.normal = temp_rec.normal;
-                rec.p = temp_rec.p;
-                rec.t = temp_rec.t;
+                // Clone temp_rec contents into rec
+                temp_rec.clone_into(rec);
             }
         }
 

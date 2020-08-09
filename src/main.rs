@@ -49,20 +49,23 @@ fn main() {
     let max_depth = 50;
 
     // World
-    let mat_gnd: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    let mat_ctr: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.1, 0.2, 0.5)));
-    let mat_lft: Rc<dyn Material> = Rc::new(Dialectric::new(1.5));
-    let mat_rht: Rc<dyn Material> = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 0.3));
-
+    let R = (PI/4.0).cos();
+    eprintln!("{}", R);
     let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
-    world.add(Rc::new(sphere::Sphere::new(Point::new( 0.0, -100.5, -1.0), 100.0, Rc::clone(&mat_gnd))));
-    world.add(Rc::new(sphere::Sphere::new(Point::new( 0.0,    0.0, -1.0),   0.5, Rc::clone(&mat_ctr))));
-    world.add(Rc::new(sphere::Sphere::new(Point::new(-1.0,    0.0, -1.0),   0.5, Rc::clone(&mat_lft))));
+
+    let mat_gnd: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.0, 0.0, 1.0)));
+    let mat_ctr: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(1.0, 0.0, 0.0)));
+    //let mat_lft: Rc<dyn Material> = Rc::new(Dialectric::new(1.5));
+    //let mat_rht: Rc<dyn Material> = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 0.3));
+
+    world.add(Rc::new(sphere::Sphere::new(Point::new( -R, 0.0, -1.0), R, Rc::clone(&mat_gnd))));
+    world.add(Rc::new(sphere::Sphere::new(Point::new(  R, 0.0, -1.0), R, Rc::clone(&mat_ctr))));
+    //world.add(Rc::new(sphere::Sphere::new(Point::new(-1.0,    0.0, -1.0),   0.5, Rc::clone(&mat_lft))));
     //world.add(Rc::new(sphere::Sphere::new(Point::new(-1.0,    0.0, -1.0),  -0.4, Rc::clone(&mat_lft))));
-    world.add(Rc::new(sphere::Sphere::new(Point::new( 1.0,    0.0, -1.0),   0.5, Rc::clone(&mat_rht))));
+    //world.add(Rc::new(sphere::Sphere::new(Point::new( 1.0,    0.0, -1.0),   0.5, Rc::clone(&mat_rht))));
 
     // Camera
-    let cam = camera::Camera::new();
+    let cam = camera::Camera::new(90.0, aspect_ratio);
 
     //Render
     print!("P3\n{} {}\n255\n", image_width, image_height);

@@ -14,6 +14,15 @@ impl HitRecord{
         self.front_face = dot(r.direction(), *outward_normal) < 0.0;
         self.normal = if self.front_face {*outward_normal} else {-*outward_normal};
     }
+
+    pub fn new() -> HitRecord {
+        HitRecord {
+            p: Point::new_e(),
+            normal: Vec3::new_e(),
+            t: 0.0,
+            front_face: false,
+        }
+    }
 }
 
 pub trait Hittable{

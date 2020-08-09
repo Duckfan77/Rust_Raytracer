@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use std::io::{Write, stderr, stdout};
-use std::rc::Rc;
+use std::rc::*;
 use std::f64;
 
 mod vec3;
@@ -16,17 +16,23 @@ mod materials;
 
 use vec3::*;
 use util::*;
+use materials::*;
 
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
+    // Just return no light if past ray bounce limit
     if depth <= 0 {
         return Color::new(0.0, 0.0, 0.0)
     }
 
     if world.hit(r, 0.0001, INFINITY, &mut rec) {
-        let target = rec.p + rec.normal + random_unit_vector();
-        return 0.5 * ray_color(&ray::Ray::new(&rec.p, &(target - rec.p)), world, depth-1)//(rec.normal + Color::new(1.0, 1.0, 1.0))
+        let (success, scattered, attenuation) = rec.mat_ptr.as_ref().scatter(r, &rec);
+
+        if success {
+            return attenuation * ray_color(&scattered, world, depth-1)
+        }
+        return Color::new(0.0, 0.0, 0.0)
     }
 
     let unit_direction = unit_vector(r.direction());
@@ -43,9 +49,12 @@ fn main() {
     let max_depth = 50;
 
     // World
+    let mat_gnd: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
+    let mat_ctr: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.7, 0.3, 0.3)));
+
     let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
-    world.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 0.0, -1.0), 0.5)));
-    world.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -100.5, -1.0), 100.0)));
+    world.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 0.0, -1.0), 0.5, Rc::clone(&mat_gnd))));
+    world.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -100.5, -1.0), 100.0, Rc::clone(&mat_ctr))));
 
     // Camera
     let cam = camera::Camera::new();

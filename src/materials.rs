@@ -6,7 +6,10 @@ use crate::{
 use std::fmt::Debug;
 
 pub trait Material {
-    fn scatter(&self, r_in: &Ray, rec: &HitRecord, attenuation: &mut Color, scattered: &mut Ray) -> bool;
+    /// Scatters an incoming ray according to the Material implementing it and the HitRecord.
+    ///
+    /// Returns bool for success, Ray containing the scattered ray, and Color containing the attenuation
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> (bool, Ray, Color);
 }
 
 impl Debug for dyn Material {
@@ -27,8 +30,28 @@ impl NoHit{
 }
 
 impl Material for NoHit {
-    fn scatter(&self, _r_in: &Ray, _rec: &HitRecord, _attenuation: &mut Color, _scattered: &mut Ray) -> bool {
-        return false;
+    fn scatter(&self, _r_in: &Ray, _rec: &HitRecord) -> (bool, Ray, Color) {
+        return (false, Ray::new(&Point::new_e(), &Vec3::new_e()), Color::new_e())
     }
 }
 
+
+#[derive(Debug, Copy, Clone)]
+pub struct Lambertian {
+    pub albedo: Color
+}
+
+impl Lambertian {
+    pub fn new(a: Color) -> Lambertian {
+        Lambertian {albedo: a}
+    }
+}
+
+impl Material for Lambertian {
+    fn scatter(&self, _r_in: &Ray, rec: &HitRecord) -> (bool, Ray, Color){
+        let scatter_dir = rec.normal + random_unit_vector();
+        let scat = Ray::new(&rec.p, &scatter_dir);
+        let atten = self.albedo;
+        return (true, scat, atten)
+    }
+}

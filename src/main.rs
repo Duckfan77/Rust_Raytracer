@@ -8,6 +8,7 @@ mod ray;
 mod hittable;
 mod sphere;
 mod hittable_list;
+mod util;
 
 use vec3::*;
 

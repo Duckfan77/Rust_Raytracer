@@ -49,7 +49,6 @@ fn main() {
     let max_depth = 50;
 
     // World
-    let vup = Point::new(0.0, 1.0, 0.0);
     let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
 
     let mat_gnd: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
@@ -64,7 +63,13 @@ fn main() {
     world.add(Rc::new(sphere::Sphere::new(Point::new( 1.0,    0.0, -1.0),   0.5, Rc::clone(&mat_rht))));
 
     // Camera
-    let cam = camera::Camera::new(&Point::new(-2.0, 2.0, 1.0), &Point::new(0.0, 0.0, -1.0), &vup, 20.0, aspect_ratio);
+    let lookfrom = Point::new(3.0, 3.0, 2.0);
+    let lookat = Point::new(0.0, 0.0, -1.0);
+    let vup = Point::new(0.0, 1.0, 0.0);
+    let dist_to_focus = (lookfrom - lookat).length();
+    let aperture = 2.0;
+
+    let cam = camera::Camera::new(&lookfrom, &lookat, &vup, 20.0, aspect_ratio, aperture, dist_to_focus);
 
     //Render
     print!("P3\n{} {}\n255\n", image_width, image_height);

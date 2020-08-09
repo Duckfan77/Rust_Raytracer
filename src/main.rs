@@ -51,10 +51,14 @@ fn main() {
     // World
     let mat_gnd: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
     let mat_ctr: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.7, 0.3, 0.3)));
+    let mat_lft: Rc<dyn Material> = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8)));
+    let mat_rht: Rc<dyn Material> = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2)));
 
     let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
-    world.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 0.0, -1.0), 0.5, Rc::clone(&mat_gnd))));
-    world.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -100.5, -1.0), 100.0, Rc::clone(&mat_ctr))));
+    world.add(Rc::new(sphere::Sphere::new(Point::new( 0.0, -100.5, -1.0), 100.0, Rc::clone(&mat_gnd))));
+    world.add(Rc::new(sphere::Sphere::new(Point::new( 0.0,    0.0, -1.0),   0.5, Rc::clone(&mat_ctr))));
+    world.add(Rc::new(sphere::Sphere::new(Point::new(-1.5,    0.0, -1.0),   0.5, Rc::clone(&mat_lft))));
+    world.add(Rc::new(sphere::Sphere::new(Point::new( 1.5,    0.0, -1.0),   0.5, Rc::clone(&mat_rht))));
 
     // Camera
     let cam = camera::Camera::new();

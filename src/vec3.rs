@@ -61,6 +61,11 @@ pub fn random_unit_vector() -> Vec3 {
     return Vec3::new(r * a.cos(), r * a.sin(), z)
 }
 
+/// reflects a vector impacting a mirrored surface with normal n. The normal is assumed to be a unit vector. Returns the reflected vector.
+pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3{
+    return *v - 2.0*dot(*v, *n) * *n
+}
+
 pub fn dot(u: Vec3, v: Vec3) -> f64{
     return u.e[0] * v.e[0]
          + u.e[1] * v.e[1]

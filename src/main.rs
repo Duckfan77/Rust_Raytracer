@@ -3,6 +3,7 @@
 use std::io::{Write, stderr, stdout};
 use std::rc::Rc;
 use std::f64;
+
 mod vec3;
 mod color;
 mod ray;
@@ -58,7 +59,8 @@ fn main() {
             let v = j as f64 / (image_height - 1) as f64;
             let r = ray::Ray::new(&origin, &(lower_left_corner + u*horizontal + v*vertical - origin));
             let pixel = ray_color(&r, &world);
-            color::write_color(stdout(), pixel);
+
+            color::write_color(stdout(), pixel, 1);
         }
     }
 }

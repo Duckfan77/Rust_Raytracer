@@ -3,7 +3,7 @@ use std::fmt;
 use std::f64;
 use crate::util::*;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone)]
 pub struct Vec3{
     e: [f64; 3]
 }

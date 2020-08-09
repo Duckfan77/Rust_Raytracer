@@ -66,6 +66,13 @@ pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3{
     return *v - 2.0*dot(*v, *n) * *n
 }
 
+pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3{
+    let cos_theta = dot(-*uv, *n);
+    let r_out_perp = etai_over_etat * (*uv + cos_theta**n);
+    let r_out_parl = -f64::sqrt( (1.0 - r_out_perp.length_squared()).abs()) * *n;
+    return r_out_perp + r_out_parl
+}
+
 pub fn dot(u: Vec3, v: Vec3) -> f64{
     return u.e[0] * v.e[0]
          + u.e[1] * v.e[1]

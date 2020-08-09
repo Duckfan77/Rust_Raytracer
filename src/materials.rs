@@ -76,3 +76,51 @@ impl Material for Metal {
         return (dot(scattered.direction(), rec.normal) > 0.0, scattered, atten)
     }
 }
+
+
+pub struct Dialectric {
+    pub ref_idx: f64,
+}
+
+impl Dialectric {
+    pub fn new (ri: f64) -> Dialectric {
+        Dialectric {ref_idx: ri}
+    }
+
+    fn schlick(cos: f64, ref_idx: f64) -> f64 {
+        let r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+        let r0 = r0*r0;
+        return r0 + (1.0-r0) * (1.0 - cos).powf(5.0);
+    }
+}
+
+impl Material for Dialectric {
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> (bool, Ray, Color) {
+        let aten = Color::new(1.0, 1.0, 1.0);
+        let etai_over_etat: f64 = if rec.front_face {1.0 / self.ref_idx} else {self.ref_idx};
+
+        let unit_dir = unit_vector(r_in.direction());
+
+        let temp = dot(-unit_dir, rec.normal);
+        let cos_theta = if temp < 1.0 {temp} else {1.0};
+        let sin_theta = f64::sqrt(1.0 - cos_theta*cos_theta);
+        if etai_over_etat * sin_theta > 1.0 {
+            // Must reflect
+            let refl = reflect(&unit_dir, &rec.normal);
+            let scattered = Ray::new(&rec.p, &refl);
+            return (true, scattered, aten)
+        }
+        // Can refract
+        let reflect_prob = Dialectric::schlick(cos_theta, etai_over_etat);
+        if crate::util::random_double() < reflect_prob {
+            let refl = reflect(&unit_dir, &rec.normal);
+            let scattered = Ray::new(&rec.p, &refl);
+            return (true, scattered, aten)
+        }
+
+        let refr = refract(&unit_dir, &rec.normal, etai_over_etat);
+        let scattered = Ray::new(&rec.p, &refr);
+
+        (true, scattered, aten)
+    }
+}

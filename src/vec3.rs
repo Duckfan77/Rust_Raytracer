@@ -1,6 +1,7 @@
 use std::ops::*;
 use std::fmt;
 use std::f64;
+use crate::util::*;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec3{
@@ -36,6 +37,28 @@ impl Vec3{
     pub fn length_squared(self) -> f64{
         return self.e[0]*self.e[0] + self.e[1]*self.e[1] + self.e[2]*self.e[2];
     }
+}
+
+pub fn random() -> Vec3 {
+    Vec3::new(random_double(), random_double(), random_double())
+}
+
+pub fn random_range(min: f64, max: f64) -> Vec3 {
+    Vec3::new(random_double_range(min, max), random_double_range(min, max), random_double_range(min, max))
+}
+
+pub fn random_in_unit_sphere() -> Vec3 {
+    loop {
+        let p = random_range(-1.0, 1.0);
+        if p.length_squared() < 1.0 {return p;}
+    }
+}
+
+pub fn random_unit_vector() -> Vec3 {
+    let a = random_double_range(0.0, 2.0*PI);
+    let z = random_double_range(-1.0, 1.0);
+    let r = f64::sqrt(1.0 - z*z);
+    return Vec3::new(r * a.cos(), r * a.sin(), z)
 }
 
 pub fn dot(u: Vec3, v: Vec3) -> f64{

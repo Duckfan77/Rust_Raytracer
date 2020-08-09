@@ -16,10 +16,16 @@ mod camera;
 use vec3::*;
 use util::*;
 
-fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable) -> Color{
+fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
-    if world.hit(r, 0.0, INFINITY, &mut rec) {
-        return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0))
+
+    if depth <= 0 {
+        return Color::new(0.0, 0.0, 0.0)
+    }
+
+    if world.hit(r, 0.0001, INFINITY, &mut rec) {
+        let target = rec.p + rec.normal + random_unit_vector();
+        return 0.5 * ray_color(&ray::Ray::new(&rec.p, &(target - rec.p)), world, depth-1)//(rec.normal + Color::new(1.0, 1.0, 1.0))
     }
 
     let unit_direction = unit_vector(r.direction());
@@ -33,6 +39,7 @@ fn main() {
     let image_width = 400;
     let image_height = (image_width as f64 / aspect_ratio) as u32;
     let sample_per_pixel = 100;
+    let max_depth = 50;
 
     // World
     let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
@@ -58,7 +65,7 @@ fn main() {
 
                 let r = cam.get_ray(u, v);
 
-                pixel += ray_color(&r, &world);
+                pixel += ray_color(&r, &world, max_depth);
             }
 
             color::write_color(stdout(), pixel, sample_per_pixel);

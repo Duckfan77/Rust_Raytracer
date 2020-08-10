@@ -4,7 +4,7 @@ use std::fmt;
 use crate::util::*;
 
 #[allow(dead_code)]
-pub fn write_color(mut out: impl io::Write, pixel: vec3::Color, sample_count: u32) -> ()
+pub fn write_color(out: &mut impl io::Write, pixel: vec3::Color, sample_count: u32) -> ()
 {
     let mut r = pixel.x();
     let mut g = pixel.y();

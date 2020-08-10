@@ -93,7 +93,7 @@ fn main() {
     let aspect_ratio = 3.0 / 2.0;
     let image_width = 400;
     let image_height = (image_width as f64 / aspect_ratio) as u32;
-    let sample_per_pixel = 500;
+    let sample_per_pixel = 100;
     let max_depth = 50;
 
     // World
@@ -111,9 +111,15 @@ fn main() {
     //Render
     print!("P3\n{} {}\n255\n", image_width, image_height);
 
+    let out = stdout();
+    let mut outlock = out.lock();
+
+    let err = stderr();
+    let mut errlock = err.lock();
+
     for j in (0..=(image_height-1)).rev() {
-        eprint!("\rScanlines remaining: {} ", j);
-        stderr().flush().expect("Fail to flush stderr");
+        write!(errlock, "\rScanlines remaining: {} ", j).expect("Fail to write to Err");
+        errlock.flush().expect("Fail to flush stderr");
 
         for i in 0..image_width {
             let mut pixel = Color::new(0.0, 0.0, 0.0);
@@ -127,7 +133,7 @@ fn main() {
                 pixel += ray_color(&r, &world, max_depth);
             }
 
-            color::write_color(stdout(), pixel, sample_per_pixel);
+            color::write_color(&mut outlock, pixel, sample_per_pixel);
         }
     }
 }

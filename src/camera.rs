@@ -51,6 +51,6 @@ impl Camera {
         let rd = self.lens_radius * random_in_unit_disk();
         let offset = self.u * rd.x() + self.v*rd.y();
 
-        Ray::new(&(self.origin + offset), &(self.lower_left_corner + s*self.horizontal + t*self.vertical - self.origin - offset))
+        Ray::new(&(self.origin + offset), &(self.lower_left_corner + s*self.horizontal + t*self.vertical - self.origin - offset), 0.0)
     }
 }

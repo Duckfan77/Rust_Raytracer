@@ -101,8 +101,7 @@ impl Material for Dialectric {
 
         let unit_dir = unit_vector(r_in.direction());
 
-        let temp = dot(-unit_dir, rec.normal);
-        let cos_theta = if temp < 1.0 {temp} else {1.0};
+        let cos_theta = f64::min(dot(-unit_dir, rec.normal), 1.0);
         let sin_theta = f64::sqrt(1.0 - cos_theta*cos_theta);
         if etai_over_etat * sin_theta > 1.0 {
             // Must reflect

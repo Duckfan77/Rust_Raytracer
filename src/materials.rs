@@ -48,9 +48,9 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, _r_in: &Ray, rec: &HitRecord) -> (bool, Ray, Color){
+    fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> (bool, Ray, Color){
         let scatter_dir = rec.normal + random_unit_vector();
-        let scat = Ray::new(&rec.p, &scatter_dir, 0.0);
+        let scat = Ray::new(&rec.p, &scatter_dir, r_in.time());
         let atten = self.albedo;
         return (true, scat, atten)
     }
@@ -71,7 +71,7 @@ impl Metal {
 impl Material for Metal {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> (bool, Ray, Color) {
         let reflected = reflect(&unit_vector(r_in.direction()), &rec.normal);
-        let scattered = Ray::new(&rec.p, &(reflected + self.fuzz*random_in_unit_sphere()), 0.0);
+        let scattered = Ray::new(&rec.p, &(reflected + self.fuzz*random_in_unit_sphere()), r_in.time());
         let atten = self.albedo;
         return (dot(scattered.direction(), rec.normal) > 0.0, scattered, atten)
     }
@@ -107,19 +107,19 @@ impl Material for Dialectric {
         if etai_over_etat * sin_theta > 1.0 {
             // Must reflect
             let refl = reflect(&unit_dir, &rec.normal);
-            let scattered = Ray::new(&rec.p, &refl, 0.0);
+            let scattered = Ray::new(&rec.p, &refl, r_in.time());
             return (true, scattered, aten)
         }
         // Can refract
         let reflect_prob = Dialectric::schlick(cos_theta, etai_over_etat);
         if crate::util::random_double() < reflect_prob {
             let refl = reflect(&unit_dir, &rec.normal);
-            let scattered = Ray::new(&rec.p, &refl, 0.0);
+            let scattered = Ray::new(&rec.p, &refl, r_in.time());
             return (true, scattered, aten)
         }
 
         let refr = refract(&unit_dir, &rec.normal, etai_over_etat);
-        let scattered = Ray::new(&rec.p, &refr, 0.0);
+        let scattered = Ray::new(&rec.p, &refr, r_in.time());
 
         (true, scattered, aten)
     }

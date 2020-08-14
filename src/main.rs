@@ -106,7 +106,7 @@ fn main() {
     let dist_to_focus = 10.0;
     let aperture = 0.1;
 
-    let cam = camera::Camera::new(&lookfrom, &lookat, &vup, 20.0, aspect_ratio, aperture, dist_to_focus);
+    let cam = camera::Camera::new(&lookfrom, &lookat, &vup, 20.0, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     //Render
     print!("P3\n{} {}\n255\n", image_width, image_height);

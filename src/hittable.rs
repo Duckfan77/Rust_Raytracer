@@ -38,6 +38,8 @@ impl HitRecord{
         target.normal = self.normal.clone();
         target.mat_ptr = Rc::clone(&self.mat_ptr);
         target.t = self.t.clone();
+        target.u = self.u.clone();
+        target.v = self.v.clone();
         target.front_face = self.front_face.clone();
     }
 }

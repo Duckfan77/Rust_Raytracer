@@ -83,3 +83,47 @@ impl Texture for NoiseTexture {
         return Color::new(1.0, 1.0, 1.0) * 0.5 * (1.0 + self.noise.noise(&(self.scale * *p)))
     }
 }
+
+
+pub struct TurbNoiseTexture {
+    pub noise: Perlin,
+    pub scale: f64,
+}
+
+impl TurbNoiseTexture {
+    pub fn new() -> TurbNoiseTexture {
+        TurbNoiseTexture {noise: Perlin::new(), scale: 1.0}
+    }
+
+    pub fn new_sc(sc: f64) -> TurbNoiseTexture {
+        TurbNoiseTexture {noise: Perlin::new(), scale: sc}
+    }
+}
+
+impl Texture for TurbNoiseTexture {
+    fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
+        return Color::new(1.0, 1.0, 1.0) * self.noise.turb(&(self.scale * *p), 7);
+    }
+}
+
+
+pub struct MarbleNoiseTexture {
+    pub noise: Perlin,
+    pub scale: f64,
+}
+
+impl MarbleNoiseTexture {
+    pub fn new() -> MarbleNoiseTexture {
+        MarbleNoiseTexture {noise: Perlin::new(), scale: 1.0}
+    }
+
+    pub fn new_sc(sc: f64) -> MarbleNoiseTexture {
+        MarbleNoiseTexture {noise: Perlin::new(), scale: sc}
+    }
+}
+
+impl Texture for MarbleNoiseTexture {
+    fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
+        return Color::new(1.0, 1.0, 1.0) * 0.5 * (1.0 + f64::sin(self.scale*p.z() + 10.0*self.noise.turb(p, 7)));
+    }
+}

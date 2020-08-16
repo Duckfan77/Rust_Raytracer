@@ -12,6 +12,10 @@ pub trait Material {
     ///
     /// Returns bool for success, Ray containing the scattered ray, and Color containing the attenuation
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> (bool, Ray, Color);
+
+    fn emitted(&self, _u: f64, _v: f64, _p: &Point) -> Color {
+        Color::new(0.0, 0.0, 0.0)
+    }
 }
 
 impl Debug for dyn Material {
@@ -127,5 +131,30 @@ impl Material for Dialectric {
         let scattered = Ray::new(&rec.p, &refr, r_in.time());
 
         (true, scattered, aten)
+    }
+}
+
+
+pub struct DiffuseLight {
+    emit: Rc<dyn Texture>,
+}
+
+impl DiffuseLight {
+    pub fn new(c: Color) -> DiffuseLight {
+        DiffuseLight {emit: Rc::new(SolidColor::new(c))}
+    }
+
+    pub fn new_txtr(a: Rc<dyn Texture>) -> DiffuseLight {
+        DiffuseLight {emit: a}
+    }
+}
+
+impl Material for DiffuseLight {
+    fn scatter(&self, _r_in: &Ray, _rec: &HitRecord) -> (bool, Ray, Color) {
+        return (false, Ray::new(&Point::new_e(), &Vec3::new_e(), 0.0), Color::new_e())
+    }
+
+    fn emitted(&self, u: f64, v: f64, p: &Point) -> Color {
+        return self.emit.value(u, v, p)
     }
 }

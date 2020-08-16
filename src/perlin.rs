@@ -32,15 +32,32 @@ impl Perlin {
     }
 
     pub fn noise(&self, p: &Point) -> f64 {
-        let _u = p.x() - f64::floor(p.x());
-        let _v = p.y() - f64::floor(p.y());
-        let _w = p.z() - f64::floor(p.z());
+        let mut u = p.x() - f64::floor(p.x());
+        let mut v = p.y() - f64::floor(p.y());
+        let mut w = p.z() - f64::floor(p.z());
+        u = u*u*(3.0 - 2.0*u);
+        v = v*v*(3.0 - 2.0*v);
+        w = w*w*(3.0 - 2.0*w);
 
-        let i = ((4.0*p.x()) as i32 & 255) as usize;
-        let j = ((4.0*p.y()) as i32 & 255) as usize;
-        let k = ((4.0*p.z()) as i32 & 255) as usize;
+        let i = f64::floor(p.x());
+        let j = f64::floor(p.y());
+        let k = f64::floor(p.z());
 
-        return self.ranfloat[(self.perm_x[i] ^ self.perm_y[j] ^ self.perm_z[k]) as usize]
+        let mut c = [[[0f64; 2]; 2]; 2];
+
+        for di in 0..2i32 {
+            for dj in 0..2i32 {
+                for dk in 0..2i32 {
+                    c[di as usize][dj as usize][dk as usize] = self.ranfloat[(
+                        self.perm_x[((i as i32 + di) & 255) as usize] ^
+                        self.perm_y[((j as i32 + dj) & 255) as usize] ^
+                        self.perm_z[((k as i32 + dk) & 255) as usize]) as usize
+                    ]
+                }
+            }
+        }
+
+        return trilinear_interp(c, u, v, w)
     }
 }
 
@@ -63,4 +80,19 @@ fn permute(p: &mut [i32; POINT_COUNT], n: usize) {
         p[i] = p[target];
         p[target] = tmp;
     }
+}
+
+fn trilinear_interp(c: [[[f64; 2]; 2]; 2], u: f64, v: f64, w:f64) -> f64 {
+    let mut accum = 0.0;
+    for i in 0..2 {
+        for j in 0..2 {
+            for k in 0..2{
+                accum += (i as f64 *u + (1.0-i as f64)*(1.0-u))*
+                         (j as f64 *v + (1.0-j as f64)*(1.0-v))*
+                         (k as f64 *w + (1.0-k as f64)*(1.0-w))*c[i as usize][j as usize][k as usize];
+            }
+        }
+    }
+
+    return accum
 }

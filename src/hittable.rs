@@ -28,7 +28,7 @@ impl HitRecord{
             mat_ptr: Rc::new(NoHit::new()),
             t: 0.0,
             u: 0.0,
-            v: 0.0,
+            v: 0.5,
             front_face: false,
         }
     }

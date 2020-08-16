@@ -1,6 +1,7 @@
 use crate::{
     vec3::*,
     perlin::Perlin,
+    util::*,
 };
 use std::fmt::Debug;
 use std::rc::Rc;
@@ -125,5 +126,84 @@ impl MarbleNoiseTexture {
 impl Texture for MarbleNoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
         return Color::new(1.0, 1.0, 1.0) * 0.5 * (1.0 + f64::sin(self.scale*p.z() + 10.0*self.noise.turb(p, 7)));
+    }
+}
+
+
+const BYTES_PER_PIXEL: i32 = 3;
+
+pub struct ImageTexture {
+    width: i32,
+    height: i32,
+    bytes_per_scanline: i32,
+    data: image::RgbImage,
+}
+
+impl ImageTexture {
+    pub fn new(filename: &str) -> ImageTexture {
+        let mut width = 0;
+        let mut height = 0;
+        let bytes: i32;
+        let mut data = image::RgbImage::new(width as u32, height as u32);
+
+        let r = image::open(filename);
+
+        match r {
+            Ok(v) => {
+                match v.as_rgb8() {
+                    None => eprint!("Error: Could not convert to rgb8 image"),
+                    Some (i) => {
+                        height = i.height() as i32;
+                        width = i.width() as i32;
+                        data = i.clone();
+                    }
+                }
+            },
+            Err(_) => {
+                eprint!("ERROR: Could not load texture image file '{}'.\n", filename);
+                width = -1;
+                height = -1;
+            }
+        }
+
+        bytes = BYTES_PER_PIXEL * width;
+
+        ImageTexture {
+            width: width,
+            height: height,
+            bytes_per_scanline: bytes,
+            data: data
+        }
+    }
+}
+
+impl Texture for ImageTexture {
+    fn value(&self, u: f64, v: f64, _p: &Point) -> Color{
+        //If no texture data, return solid cyan as debugging tool
+        if self.height == -1 && self.width == -1 {
+            return Color::new(0.0, 1.0, 1.0)
+        }
+
+        //Clamp coordinates to [0,1] x [1,0]
+        let u = clamp(u, 0.0, 1.0);
+        let v = 1.0 - clamp(v, 0.0, 1.0); //flip v to image coordinates
+
+        let mut i = (u * self.width as f64) as i32;
+        let mut j = (v * self.height as f64) as i32;
+
+        //clamp int mapping, actual coordinates should be less than 1.0
+        if i >= self.width {
+            i = self.width - 1;
+        }
+        if j >= self.height {
+            j = self.height - 1;
+        }
+
+        let color_scale  = 1.0/255.0;
+        let pixel = self.data.get_pixel(i as u32, j as u32);
+
+        Color::new(pixel[0] as f64 * color_scale,
+                   pixel[1] as f64 * color_scale,
+                   pixel[2] as f64 * color_scale,)
     }
 }

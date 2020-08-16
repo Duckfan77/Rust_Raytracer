@@ -104,6 +104,14 @@ fn two_perlin_spheres() -> hittable_list::HittableList {
     return objects
 }
 
+fn earth() -> hittable_list::HittableList {
+    let earth_txtr: Rc<dyn Texture> = Rc::new(ImageTexture::new("earthmap.jpg"));
+    let earth_surface: Rc<dyn Material> = Rc::new(Lambertian::new_txtr(&earth_txtr));
+    let globe = Rc::new(sphere::Sphere::new(Point::new(0.0, 0.0, 0.0), 2.0, Rc::clone(&earth_surface)));
+
+    return hittable_list::HittableList::new(globe)
+}
+
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
@@ -159,11 +167,18 @@ fn main() {
             vfov = 20.0;
         }
 
-        3 | _ => {
+        3 => {
             world = two_perlin_spheres();
             lookfrom = Point::new(13.0, 2.0, 3.0);
             lookat = Point::new(0.0, 0.0, 0.0);
             vfov = 20.0;
+        }
+
+        4 | _ => {
+            world = earth();
+            lookfrom = Point::new(13.0, 2.0, 3.0);
+            lookat = Point::new(0.0, 0.0, 0.0);
+            vfov = 20.0
         }
     }
 

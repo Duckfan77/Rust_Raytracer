@@ -112,7 +112,7 @@ fn earth() -> hittable_list::HittableList {
     return hittable_list::HittableList::new(globe)
 }
 
-fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{
+fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
     // Just return no light if past ray bounce limit
@@ -120,18 +120,19 @@ fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{
         return Color::new(0.0, 0.0, 0.0)
     }
 
-    if world.hit(r, 0.0001, INFINITY, &mut rec) {
-        let (success, scattered, attenuation) = rec.mat_ptr.as_ref().scatter(r, &rec);
-
-        if success {
-            return attenuation * ray_color(&scattered, world, depth-1)
-        }
-        return Color::new(0.0, 0.0, 0.0)
+    // If the ray hits nothing, return the background
+    if !world.hit(r, 0.0001, INFINITY, &mut rec) {
+        return *background
     }
 
-    let unit_direction = unit_vector(r.direction());
-    let t = 0.5*(unit_direction.y() + 1.0);
-    return (1.0-t)*Color::new(1.0, 1.0, 1.0) + t*Color::new(0.5, 0.7, 1.0);
+    let (success, scattered, attenuation) = rec.mat_ptr.as_ref().scatter(r, &rec);
+    let emitted = rec.mat_ptr.as_ref().emitted(rec.u, rec.v, &rec.p);
+
+    if !success {
+        return emitted
+    }
+
+    return emitted + attenuation * ray_color(&scattered, background, world, depth-1)
 }
 
 fn main() {
@@ -150,10 +151,13 @@ fn main() {
     #[allow(unused_assignments)]
     let mut vfov = 40.0;
     let mut aperture = 0.0;
+    #[allow(unused_assignments)]
+    let mut background = Color::new(0.0, 0.0, 0.0);
 
     match 0 {
         1 => {
             world = random_scene();
+            background = Color::new(0.70, 0.80, 1.00);
             lookfrom = Point::new(13.0, 2.0, 3.0);
             lookat = Point::new(0.0, 0.0, 0.0);
             vfov = 20.0;
@@ -162,20 +166,23 @@ fn main() {
 
         2 => {
             world = two_spheres();
+            background = Color::new(0.70, 0.80, 1.00);
             lookfrom = Point::new(13.0, 2.0, 3.0);
             lookat = Point::new(0.0, 0.0, 0.0);
             vfov = 20.0;
         }
 
-        3 => {
+        3 | _=> {
             world = two_perlin_spheres();
+            background = Color::new(0.70, 0.80, 1.00);
             lookfrom = Point::new(13.0, 2.0, 3.0);
             lookat = Point::new(0.0, 0.0, 0.0);
             vfov = 20.0;
         }
 
-        4 | _ => {
+        4 => {
             world = earth();
+            background = Color::new(0.70, 0.80, 1.00);
             lookfrom = Point::new(13.0, 2.0, 3.0);
             lookat = Point::new(0.0, 0.0, 0.0);
             vfov = 20.0
@@ -210,7 +217,7 @@ fn main() {
 
                 let r = cam.get_ray(u, v);
 
-                pixel += ray_color(&r, &world, max_depth);
+                pixel += ray_color(&r, &background, &world, max_depth);
             }
 
             color::write_color(&mut outlock, pixel, sample_per_pixel);

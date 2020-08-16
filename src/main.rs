@@ -96,8 +96,9 @@ fn two_perlin_spheres() -> hittable_list::HittableList {
     let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
 
     let pertext: Rc<dyn Texture> = Rc::new(MarbleNoiseTexture::new_sc(4.0));
+    let pertext2: Rc<dyn Texture> = Rc::new(NoiseTexture::new_sc(5.0));
 
-    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::new(Lambertian::new_txtr(&pertext)))));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::new(Lambertian::new_txtr(&pertext2)))));
     objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  2.0, 0.0), 2.0, Rc::new(Lambertian::new_txtr(&pertext)))));
 
     return objects

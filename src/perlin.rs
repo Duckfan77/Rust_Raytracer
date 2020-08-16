@@ -1,12 +1,13 @@
 use crate::{
     util::*,
     vec3::*,
+    vec3,
 };
 
 const POINT_COUNT: usize = 256;
 
 pub struct Perlin {
-    ranfloat: [f64; POINT_COUNT],
+    ranvec: [Vec3; POINT_COUNT],
     perm_x: [i32; POINT_COUNT],
     perm_y: [i32; POINT_COUNT],
     perm_z: [i32; POINT_COUNT],
@@ -14,9 +15,9 @@ pub struct Perlin {
 
 impl Perlin {
     pub fn new() -> Perlin {
-        let mut ranfloat = [0.0; POINT_COUNT];
+        let mut ranvec = [Vec3::new_e(); POINT_COUNT];
         for i in 0..POINT_COUNT {
-            ranfloat[i] = random_double();
+            ranvec[i] = unit_vector(vec3::random_range(-1.0, 1.0));
         }
 
         let perm_x = perlin_generate_perm();
@@ -24,7 +25,7 @@ impl Perlin {
         let perm_z = perlin_generate_perm();
 
         Perlin {
-            ranfloat: ranfloat,
+            ranvec: ranvec,
             perm_x: perm_x,
             perm_y: perm_y,
             perm_z: perm_z,
@@ -32,23 +33,20 @@ impl Perlin {
     }
 
     pub fn noise(&self, p: &Point) -> f64 {
-        let mut u = p.x() - f64::floor(p.x());
-        let mut v = p.y() - f64::floor(p.y());
-        let mut w = p.z() - f64::floor(p.z());
-        u = u*u*(3.0 - 2.0*u);
-        v = v*v*(3.0 - 2.0*v);
-        w = w*w*(3.0 - 2.0*w);
+        let u = p.x() - f64::floor(p.x());
+        let v = p.y() - f64::floor(p.y());
+        let w = p.z() - f64::floor(p.z());
 
         let i = f64::floor(p.x());
         let j = f64::floor(p.y());
         let k = f64::floor(p.z());
 
-        let mut c = [[[0f64; 2]; 2]; 2];
+        let mut c = [[[Vec3::new_e(); 2]; 2]; 2];
 
         for di in 0..2i32 {
             for dj in 0..2i32 {
                 for dk in 0..2i32 {
-                    c[di as usize][dj as usize][dk as usize] = self.ranfloat[(
+                    c[di as usize][dj as usize][dk as usize] = self.ranvec[(
                         self.perm_x[((i as i32 + di) & 255) as usize] ^
                         self.perm_y[((j as i32 + dj) & 255) as usize] ^
                         self.perm_z[((k as i32 + dk) & 255) as usize]) as usize
@@ -57,7 +55,7 @@ impl Perlin {
             }
         }
 
-        return trilinear_interp(c, u, v, w)
+        return perlin_interp(c, u, v, w)
     }
 }
 
@@ -80,6 +78,27 @@ fn permute(p: &mut [i32; POINT_COUNT], n: usize) {
         p[i] = p[target];
         p[target] = tmp;
     }
+}
+
+fn perlin_interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
+    let uu = u*u*(3.0-2.0*u);
+    let vv = v*v*(3.0-2.0*v);
+    let ww = w*w*(3.0-2.0*w);
+    let mut accum = 0.0;
+
+    for i in 0..2 {
+        for j in 0..2 {
+            for k in 0..2 {
+                let weight_v = Vec3::new(u-i as f64, v-j as f64, w-k as f64);
+                accum += (i as f64 * uu + (1.0-i as f64) * (1.0-uu))
+                       * (j as f64 * vv + (1.0-j as f64) * (1.0-vv))
+                       * (k as f64 * ww + (1.0-k as f64) * (1.0-ww))
+                       * dot(c[i][j][k], weight_v);
+            }
+        }
+    }
+
+    return accum
 }
 
 fn trilinear_interp(c: [[[f64; 2]; 2]; 2], u: f64, v: f64, w:f64) -> f64 {

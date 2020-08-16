@@ -80,6 +80,17 @@ fn random_scene() -> hittable_list::HittableList {
     return world
 }
 
+fn two_spheres() -> hittable_list::HittableList {
+    let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+
+    let checker: Rc<dyn Texture> = Rc::new(CheckerTexture::new_clr(Color::new(0.2, 0.3, 0.1), Color::new(0.9, 0.9, 0.9)));
+
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -10.0, 0.0), 10.0, Rc::new(Lambertian::new_txtr(&checker)))));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  10.0, 0.0), 10.0, Rc::new(Lambertian::new_txtr(&checker)))));
+
+    return objects
+}
+
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
@@ -111,16 +122,36 @@ fn main() {
     let max_depth = 50;
 
     // World
-    let world = random_scene();
+    let world: hittable_list::HittableList;
+
+    let lookfrom: Point;
+    let lookat: Point;
+    #[allow(unused_assignments)]
+    let mut vfov = 40.0;
+    let mut aperture = 0.0;
+
+    match 0 {
+        1 => {
+            world = random_scene();
+            lookfrom = Point::new(13.0, 2.0, 3.0);
+            lookat = Point::new(0.0, 0.0, 0.0);
+            vfov = 20.0;
+            aperture = 0.1;
+        }
+
+        2 | _ => {
+            world = two_spheres();
+            lookfrom = Point::new(13.0, 2.0, 3.0);
+            lookat = Point::new(0.0, 0.0, 0.0);
+            vfov = 20.0;
+        }
+    }
 
     // Camera
-    let lookfrom = Point::new(13.0, 2.0, 3.0);
-    let lookat = Point::new(0.0, 0.0, 0.0);
     let vup = Point::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
-    let aperture = 0.1;
 
-    let cam = camera::Camera::new(&lookfrom, &lookat, &vup, 20.0, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
+    let cam = camera::Camera::new(&lookfrom, &lookat, &vup, vfov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     //Render
     print!("P3\n{} {}\n255\n", image_width, image_height);

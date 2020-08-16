@@ -17,6 +17,7 @@ mod moving_sphere;
 mod aabb;
 mod bvh;
 mod texture;
+mod perlin;
 
 use vec3::*;
 use util::*;
@@ -91,6 +92,17 @@ fn two_spheres() -> hittable_list::HittableList {
     return objects
 }
 
+fn two_perlin_spheres() -> hittable_list::HittableList {
+    let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+
+    let pertext: Rc<dyn Texture> = Rc::new(NoiseTexture::new());
+
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::new(Lambertian::new_txtr(&pertext)))));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  2.0, 0.0), 2.0, Rc::new(Lambertian::new_txtr(&pertext)))));
+
+    return objects
+}
+
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
@@ -139,8 +151,15 @@ fn main() {
             aperture = 0.1;
         }
 
-        2 | _ => {
+        2 => {
             world = two_spheres();
+            lookfrom = Point::new(13.0, 2.0, 3.0);
+            lookat = Point::new(0.0, 0.0, 0.0);
+            vfov = 20.0;
+        }
+
+        3 | _ => {
+            world = two_perlin_spheres();
             lookfrom = Point::new(13.0, 2.0, 3.0);
             lookat = Point::new(0.0, 0.0, 0.0);
             vfov = 20.0;

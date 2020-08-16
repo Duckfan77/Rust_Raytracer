@@ -15,6 +15,7 @@ mod camera;
 mod materials;
 mod moving_sphere;
 mod aabb;
+mod bvh;
 
 use vec3::*;
 use util::*;
@@ -67,6 +68,9 @@ fn random_scene() -> hittable_list::HittableList {
 
     let mat3: Rc<dyn Material> = Rc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
     world.add(Rc::new(sphere::Sphere::new(Point::new(4.0, 1.0, 0.0), 1.0, Rc::clone(&mat3))));
+
+    let mut out = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+    out.add(Rc::new(bvh::BvhNode::new_l(&mut world, 0.0, 1.0)));
 
     return world
 }

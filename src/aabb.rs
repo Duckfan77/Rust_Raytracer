@@ -39,21 +39,6 @@ impl AABB {
             if tmax <= tmin {
                 return false
             }
-            /*
-            #[allow(non_snake_case)]
-            let invD = 1.0 / r.direction()[a];
-            let mut t0 = (self.min[a] - r.origin()[a]) * invD;
-            let mut t1 = (self.max[a] - r.origin()[a]) * invD;
-            if invD < 0.0 {
-                std::mem::swap(&mut t0, &mut t1);
-            }
-
-            let tmin = if t0 > tmin {t0} else {tmax};
-            let tmax = if t1 < tmax {t1} else {tmax};
-
-            if tmax <= tmin {
-                return false
-            }*/
         }
 
         return true

@@ -14,6 +14,7 @@ mod util;
 mod camera;
 mod materials;
 mod moving_sphere;
+mod aabb;
 
 use vec3::*;
 use util::*;

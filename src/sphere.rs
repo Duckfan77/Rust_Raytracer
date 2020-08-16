@@ -3,6 +3,7 @@ use crate::{
     vec3::*,
     ray::Ray,
     materials::*,
+    aabb::AABB,
 };
 use std::f64;
 use std::rc::Rc;
@@ -53,5 +54,10 @@ impl Hittable for Sphere{
         }
 
         return false
+    }
+
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
+        let out_box = AABB::new(&(self.center - Vec3::new(self.radius, self.radius, self.radius)), &(self.center + Vec3::new(self.radius, self.radius, self.radius)));
+        return (true, out_box)
     }
 }

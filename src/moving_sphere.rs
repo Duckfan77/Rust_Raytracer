@@ -3,6 +3,7 @@ use crate::{
     vec3::*,
     ray::Ray,
     materials::*,
+    aabb::*,
 };
 use std::f64;
 use std::rc::Rc;
@@ -66,5 +67,13 @@ impl Hittable for MovingSphere {
         }
 
         return false
+    }
+
+    fn bounding_box(&self, t0: f64, t1: f64) -> (bool, AABB) {
+        let box0 = AABB::new(&(self.center(t0) - Vec3::new(self.radius, self.radius, self.radius)), &(self.center(t0) + Vec3::new(self.radius, self.radius, self.radius)));
+        let box1 = AABB::new(&(self.center(t1) - Vec3::new(self.radius, self.radius, self.radius)), &(self.center(t1) + Vec3::new(self.radius, self.radius, self.radius)));
+
+        let out_box = surrounding_box(&box0, &box1);
+        return (true, out_box)
     }
 }

@@ -2,6 +2,7 @@ use crate::{
     vec3::*,
 };
 use std::fmt::Debug;
+use std::rc::Rc;
 
 pub trait Texture {
     fn value(&self, u: f64, v: f64, p: &Point) -> Color;
@@ -30,5 +31,32 @@ impl SolidColor {
 impl Texture for SolidColor {
     fn value(&self, _u: f64, _v: f64, _p: &Point) -> Color {
         self.color_val
+    }
+}
+
+
+pub struct CheckerTexture {
+    pub odd: Rc<dyn Texture>,
+    pub even: Rc<dyn Texture>,
+}
+
+impl CheckerTexture {
+    pub fn new(t0: &Rc<dyn Texture>, t1: &Rc<dyn Texture>) -> CheckerTexture {
+        CheckerTexture {even: Rc::clone(t0), odd: Rc::clone(t1)}
+    }
+
+    pub fn new_clr(c1: Color, c2: Color) -> CheckerTexture {
+        CheckerTexture {even: Rc::new(SolidColor::new(c1)), odd: Rc::new(SolidColor::new(c2))}
+    }
+}
+
+impl Texture for CheckerTexture {
+    fn value(&self, u: f64, v: f64, p: &Point) -> Color {
+        let sines = f64::sin(10.0*p.x()) * f64::sin(10.0*p.y()) * f64::sin(10.0*p.z());
+        if sines < 0.0 {
+            return self.odd.value(u, v, p)
+        } else {
+            return self.even.value(u, v, p)
+        }
     }
 }

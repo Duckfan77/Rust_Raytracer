@@ -21,12 +21,16 @@ mod texture;
 use vec3::*;
 use util::*;
 use materials::*;
+use texture::*;
 
 fn random_scene() -> hittable_list::HittableList {
     let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
 
-    let mat_gnd: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    let checker: Rc<dyn Texture> = Rc::new(CheckerTexture::new_clr(Color::new(0.2, 0.3, 0.1), Color::new(0.9, 0.9, 0.9)));
+    let mat_gnd: Rc<dyn Material> = Rc::new(Lambertian::new_txtr(&checker));
     world.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::clone(&mat_gnd))));
+
+    let mut spheres = hittable_list::HittableList {objects: Vec::with_capacity(484)};
 
     for a in -11..11 {
         let a = a as f64;
@@ -44,17 +48,17 @@ fn random_scene() -> hittable_list::HittableList {
                     let albedo = random() * random();
                     mat_sphere = Rc::new(Lambertian::new(albedo));
                     let center2 = center + Vec3::new(0.0, random_double_range(0.0, 0.5), 0.0);
-                    world.add(Rc::new(moving_sphere::MovingSphere::new(center, center2, 0.0, 1.0, 0.2, Rc::clone(&mat_sphere))));
+                    spheres.add(Rc::new(moving_sphere::MovingSphere::new(center, center2, 0.0, 1.0, 0.2, Rc::clone(&mat_sphere))));
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = random_range(0.5, 1.0);
                     let fuzz = random_double_range(0.0, 0.5);
                     mat_sphere = Rc::new(Metal::new(albedo, fuzz));
-                    world.add(Rc::new(sphere::Sphere::new(center, 0.2, Rc::clone(&mat_sphere))));
+                    spheres.add(Rc::new(sphere::Sphere::new(center, 0.2, Rc::clone(&mat_sphere))));
                 } else {
                     // glass
                     mat_sphere = Rc::new(Dialectric::new(1.5));
-                    world.add(Rc::new(sphere::Sphere::new(center, 0.2, Rc::clone(&mat_sphere))));
+                    spheres.add(Rc::new(sphere::Sphere::new(center, 0.2, Rc::clone(&mat_sphere))));
                 }
 
             }
@@ -70,10 +74,10 @@ fn random_scene() -> hittable_list::HittableList {
     let mat3: Rc<dyn Material> = Rc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.0));
     world.add(Rc::new(sphere::Sphere::new(Point::new(4.0, 1.0, 0.0), 1.0, Rc::clone(&mat3))));
 
-    let mut out = hittable_list::HittableList {objects: Vec::with_capacity(10)};
-    out.add(Rc::new(bvh::BvhNode::new_l(&mut world, 0.0, 1.0)));
+    //let mut out = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+    world.add(Rc::new(bvh::BvhNode::new_l(&mut spheres, 0.0, 1.0)));
 
-    return out
+    return world
 }
 
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{

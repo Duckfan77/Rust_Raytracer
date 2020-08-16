@@ -4,6 +4,7 @@ use crate::{
     ray::Ray,
     materials::*,
     aabb::AABB,
+    util::*,
 };
 use std::f64;
 use std::rc::Rc;
@@ -19,6 +20,15 @@ impl Sphere{
     pub fn new(cen: Point, r: f64, m: Rc<dyn Material>) -> Sphere{
         Sphere {center: cen, radius: r, mat_ptr: m}
     }
+}
+
+///Vec3 -> u, v
+pub fn get_sphere_uv(p: &Vec3) -> (f64, f64) {
+    let phi = f64::atan2(p.z(), p.x());
+    let theta = f64::asin(p.y());
+    let u = 1.0-(phi + PI) / (2.0*PI);
+    let v = (theta + PI/2.0) / PI;
+    return (u, v)
 }
 
 impl Hittable for Sphere{
@@ -38,6 +48,9 @@ impl Hittable for Sphere{
                 rec.p = r.at(rec.t);
                 let outward_normal = (rec.p - self.center) / self.radius;
                 rec.set_face_normal(&r, &outward_normal);
+                let (u, v) = get_sphere_uv(&((rec.p - self.center) / self.radius));
+                rec.u = u;
+                rec.v = v;
                 rec.mat_ptr = Rc::clone(&self.mat_ptr);
                 return true
             }
@@ -48,6 +61,9 @@ impl Hittable for Sphere{
                 rec.p = r.at(rec.t);
                 let outward_normal = (rec.p - self.center) / self.radius;
                 rec.set_face_normal(&r, &outward_normal);
+                let (u, v) = get_sphere_uv(&((rec.p - self.center) / self.radius));
+                rec.u = u;
+                rec.v = v;
                 rec.mat_ptr = Rc::clone(&self.mat_ptr);
                 return true
             }

@@ -10,6 +10,8 @@ pub struct HitRecord{
     pub normal: Vec3,
     pub mat_ptr: Rc<dyn Material>,
     pub t: f64,
+    pub u: f64,
+    pub v: f64,
     pub front_face: bool,
 }
 
@@ -25,6 +27,8 @@ impl HitRecord{
             normal: Vec3::new_e(),
             mat_ptr: Rc::new(NoHit::new()),
             t: 0.0,
+            u: 0.0,
+            v: 0.0,
             front_face: false,
         }
     }

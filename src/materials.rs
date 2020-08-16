@@ -2,8 +2,10 @@ use crate::{
     ray::Ray,
     hittable::*,
     vec3::*,
+    texture::*,
 };
 use std::fmt::Debug;
+use std::rc::Rc;
 
 pub trait Material {
     /// Scatters an incoming ray according to the Material implementing it and the HitRecord.
@@ -36,14 +38,18 @@ impl Material for NoHit {
 }
 
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct Lambertian {
-    pub albedo: Color
+    pub albedo: Rc<dyn Texture>,
 }
 
 impl Lambertian {
     pub fn new(a: Color) -> Lambertian {
-        Lambertian {albedo: a}
+        Lambertian {albedo: Rc::new(SolidColor::new(a))}
+    }
+
+    pub fn new_txtr(a: &Rc<dyn Texture>) -> Lambertian{
+        Lambertian {albedo: Rc::clone(a)}
     }
 }
 
@@ -51,7 +57,7 @@ impl Material for Lambertian {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> (bool, Ray, Color){
         let scatter_dir = rec.normal + random_unit_vector();
         let scat = Ray::new(&rec.p, &scatter_dir, r_in.time());
-        let atten = self.albedo;
+        let atten = self.albedo.value(rec.u, rec.v, &rec.p);
         return (true, scat, atten)
     }
 }

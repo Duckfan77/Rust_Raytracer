@@ -16,6 +16,7 @@ mod materials;
 mod moving_sphere;
 mod aabb;
 mod bvh;
+mod texture;
 
 use vec3::*;
 use util::*;
@@ -72,7 +73,7 @@ fn random_scene() -> hittable_list::HittableList {
     let mut out = hittable_list::HittableList {objects: Vec::with_capacity(10)};
     out.add(Rc::new(bvh::BvhNode::new_l(&mut world, 0.0, 1.0)));
 
-    return world
+    return out
 }
 
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: u32) -> Color{

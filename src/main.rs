@@ -20,6 +20,7 @@ mod texture;
 mod perlin;
 mod aarect;
 mod boxes;
+mod constant_medium;
 
 use vec3::*;
 use util::*;
@@ -158,6 +159,35 @@ fn cornell_box() -> hittable_list::HittableList {
     return objects
 }
 
+fn cornell_smoke() -> hittable_list::HittableList {
+    let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+
+    let red:   Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.65, 0.05, 0.05)));
+    let white: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.73, 0.73, 0.73)));
+    let green: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.12, 0.45, 0.15)));
+    let light: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(7.0, 7.0, 7.0)));
+
+    objects.add(Rc::new(aarect::YZRect::new(0.0, 555.0, 0.0, 555.0, 555.0, Rc::clone(&green))));
+    objects.add(Rc::new(aarect::YZRect::new(0.0, 555.0, 0.0, 555.0, 0.0, Rc::clone(&red))));
+    objects.add(Rc::new(aarect::XZRect::new(113.0, 443.0, 127.0, 432.0, 554.0, Rc::clone(&light))));
+    objects.add(Rc::new(aarect::XZRect::new(0.0, 555.0, 0.0, 555.0, 555.0, Rc::clone(&white))));
+    objects.add(Rc::new(aarect::XZRect::new(0.0, 555.0, 0.0, 555.0, 0.0, Rc::clone(&white))));
+    objects.add(Rc::new(aarect::XYRect::new(0.0, 555.0, 0.0, 555.0, 555.0, Rc::clone(&white))));
+
+    let mut box1: Rc<dyn Hittable> = Rc::new(boxes::Box::new(&Point::new(0.0, 0.0, 0.0), &Point::new(165.0, 330.0, 165.0), Rc::clone(&white)));
+    box1 = Rc::new(RotateY::new(box1, 15.0));
+    box1 = Rc::new(Translate::new(box1, &Vec3::new(265.0, 0.0, 295.0)));
+
+    let mut box2: Rc<dyn Hittable> = Rc::new(boxes::Box::new(&Point::new(0.0, 0.0, 0.0), &Point::new(165.0, 165.0, 165.0), Rc::clone(&white)));
+    box2 = Rc::new(RotateY::new(box2, -18.0));
+    box2 = Rc::new(Translate::new(box2, &Vec3::new(130.0, 0.0, 65.0)));
+
+    objects.add(Rc::new(constant_medium::ConstantMedium::new(box1, 0.01, Color::new(0.0, 0.0, 0.0))));
+    objects.add(Rc::new(constant_medium::ConstantMedium::new(box2, 0.01, Color::new(1.0, 1.0, 1.0))));
+
+    return objects
+}
+
 fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
@@ -242,12 +272,22 @@ fn main() {
             vfov = 20.0;
         }
 
-        6 | _ => {
+        6 => {
             world = cornell_box();
             aspect_ratio = 1.0;
             image_width = 600;
             sample_per_pixel = 200;
             background = Color::new(0.0, 0.0, 0.0);
+            lookfrom = Point::new(278.0, 278.0, -800.0);
+            lookat = Point::new(278.0, 278.0, 0.0);
+            vfov = 40.0;
+        }
+
+        7 | _ => {
+            world = cornell_smoke();
+            aspect_ratio = 1.0;
+            image_width = 600;
+            sample_per_pixel = 200;
             lookfrom = Point::new(278.0, 278.0, -800.0);
             lookat = Point::new(278.0, 278.0, 0.0);
             vfov = 40.0;

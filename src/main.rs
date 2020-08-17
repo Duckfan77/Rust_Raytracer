@@ -19,6 +19,7 @@ mod bvh;
 mod texture;
 mod perlin;
 mod aarect;
+mod boxes;
 
 use vec3::*;
 use util::*;
@@ -142,6 +143,9 @@ fn cornell_box() -> hittable_list::HittableList {
     objects.add(Rc::new(aarect::XZRect::new(0.0, 555.0, 0.0, 555.0, 0.0, Rc::clone(&white))));
     objects.add(Rc::new(aarect::XZRect::new(0.0, 555.0, 0.0, 555.0, 555.0, Rc::clone(&white))));
     objects.add(Rc::new(aarect::XYRect::new(0.0, 555.0, 0.0, 555.0, 555.0, Rc::clone(&white))));
+
+    objects.add(Rc::new(boxes::Box::new(&Point::new(130.0, 0.0, 65.0), &Point::new(205.0, 165.0, 230.0), Rc::clone(&white))));
+    objects.add(Rc::new(boxes::Box::new(&Point::new(265.0, 0.0, 295.0), &Point::new(430.0, 330.0, 460.0), Rc::clone(&white))));
 
     return objects
 }

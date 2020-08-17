@@ -18,6 +18,7 @@ mod aabb;
 mod bvh;
 mod texture;
 mod perlin;
+mod aarect;
 
 use vec3::*;
 use util::*;
@@ -112,6 +113,21 @@ fn earth() -> hittable_list::HittableList {
     return hittable_list::HittableList::new(globe)
 }
 
+fn simple_light() -> hittable_list::HittableList {
+    let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+
+    let pertext: Rc<dyn Texture> = Rc::new(MarbleNoiseTexture::new_sc(4.0));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::new(Lambertian::new_txtr(&pertext)))));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  2.0, 0.0), 2.0, Rc::new(Lambertian::new_txtr(&pertext)))));
+
+    let difflight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
+    //let grnlight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(0.0, 12.0, 0.0)));
+    objects.add(Rc::new(aarect::XYRect::new(3.0, 5.0, 1.0, 3.0, -2.0, Rc::clone(&difflight))));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 7.0, 0.0), 2.0, Rc::clone(&difflight))));
+
+    return objects
+}
+
 fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
@@ -140,7 +156,7 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 400;
     let image_height = (image_width as f64 / aspect_ratio) as u32;
-    let sample_per_pixel = 100;
+    let mut sample_per_pixel = 100;
     let max_depth = 50;
 
     // World
@@ -172,7 +188,7 @@ fn main() {
             vfov = 20.0;
         }
 
-        3 | _=> {
+        3 => {
             world = two_perlin_spheres();
             background = Color::new(0.70, 0.80, 1.00);
             lookfrom = Point::new(13.0, 2.0, 3.0);
@@ -186,6 +202,15 @@ fn main() {
             lookfrom = Point::new(13.0, 2.0, 3.0);
             lookat = Point::new(0.0, 0.0, 0.0);
             vfov = 20.0
+        }
+
+        5 | _ => {
+            world = simple_light();
+            sample_per_pixel = 400;
+            background = Color::new(0.0, 0.0, 0.0);
+            lookfrom = Point::new(26.0, 3.0, 6.0);
+            lookat = Point::new(0.0, 2.0, 0.0);
+            vfov = 20.0;
         }
     }
 

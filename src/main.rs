@@ -128,6 +128,24 @@ fn simple_light() -> hittable_list::HittableList {
     return objects
 }
 
+fn cornell_box() -> hittable_list::HittableList {
+    let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+
+    let red:   Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.65, 0.05, 0.05)));
+    let white: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.73, 0.73, 0.73)));
+    let green: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.12, 0.45, 0.13)));
+    let light: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0)));
+
+    objects.add(Rc::new(aarect::YZRect::new(0.0, 555.0, 0.0, 555.0, 555.0, Rc::clone(&green))));
+    objects.add(Rc::new(aarect::YZRect::new(0.0, 555.0, 0.0, 555.0, 0.0, Rc::clone(&red))));
+    objects.add(Rc::new(aarect::XZRect::new(213.0, 343.0, 227.0, 332.0, 554.0, Rc::clone(&light))));
+    objects.add(Rc::new(aarect::XZRect::new(0.0, 555.0, 0.0, 555.0, 0.0, Rc::clone(&white))));
+    objects.add(Rc::new(aarect::XZRect::new(0.0, 555.0, 0.0, 555.0, 555.0, Rc::clone(&white))));
+    objects.add(Rc::new(aarect::XYRect::new(0.0, 555.0, 0.0, 555.0, 555.0, Rc::clone(&white))));
+
+    return objects
+}
+
 fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
@@ -153,9 +171,8 @@ fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, d
 
 fn main() {
     //Image
-    let aspect_ratio = 16.0 / 9.0;
-    let image_width = 400;
-    let image_height = (image_width as f64 / aspect_ratio) as u32;
+    let mut aspect_ratio = 16.0 / 9.0;
+    let mut image_width = 400;
     let mut sample_per_pixel = 100;
     let max_depth = 50;
 
@@ -204,7 +221,7 @@ fn main() {
             vfov = 20.0
         }
 
-        5 | _ => {
+        5 => {
             world = simple_light();
             sample_per_pixel = 400;
             background = Color::new(0.0, 0.0, 0.0);
@@ -212,10 +229,22 @@ fn main() {
             lookat = Point::new(0.0, 2.0, 0.0);
             vfov = 20.0;
         }
+
+        6 | _ => {
+            world = cornell_box();
+            aspect_ratio = 1.0;
+            image_width = 600;
+            sample_per_pixel = 200;
+            background = Color::new(0.0, 0.0, 0.0);
+            lookfrom = Point::new(278.0, 278.0, -800.0);
+            lookat = Point::new(278.0, 278.0, 0.0);
+            vfov = 40.0;
+        }
     }
 
     // Camera
     let vup = Point::new(0.0, 1.0, 0.0);
+    let image_height = (image_width as f64 / aspect_ratio) as u32;
     let dist_to_focus = 10.0;
 
     let cam = camera::Camera::new(&lookfrom, &lookat, &vup, vfov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);

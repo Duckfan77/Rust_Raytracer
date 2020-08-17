@@ -135,7 +135,7 @@ fn cornell_box() -> hittable_list::HittableList {
 
     let red:   Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.65, 0.05, 0.05)));
     let white: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.73, 0.73, 0.73)));
-    let green: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.12, 0.45, 0.13)));
+    let green: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.12, 0.45, 0.15)));
     let light: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(15.0, 15.0, 15.0)));
 
     objects.add(Rc::new(aarect::YZRect::new(0.0, 555.0, 0.0, 555.0, 555.0, Rc::clone(&green))));
@@ -150,7 +150,7 @@ fn cornell_box() -> hittable_list::HittableList {
     box1 = Rc::new(Translate::new(box1, &Vec3::new(265.0, 0.0, 295.0)));
     objects.add(box1);
 
-    let mut box2: Rc<dyn Hittable> = Rc::new(boxes::Box::new(&Point::new(265.0, 0.0, 295.0), &Point::new(430.0, 330.0, 460.0), Rc::clone(&white)));
+    let mut box2: Rc<dyn Hittable> = Rc::new(boxes::Box::new(&Point::new(0.0, 0.0, 0.0), &Point::new(165.0, 165.0, 165.0), Rc::clone(&white)));
     box2 = Rc::new(RotateY::new(box2, -18.0));
     box2 = Rc::new(Translate::new(box2, &Vec3::new(130.0, 0.0, 65.0)));
     objects.add(box2);

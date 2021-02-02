@@ -48,13 +48,17 @@ fn random_scene() -> hittable_list::HittableList {
             if (center - Point::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 let mat_sphere: Rc<dyn Material>;
 
-                if choose_mat < 0.8 {
+                if choose_mat < 0.5 {
                     // difuse
                     let albedo = random() * random();
                     mat_sphere = Rc::new(Lambertian::new(albedo));
                     let center2 = center + Vec3::new(0.0, random_double_range(0.0, 0.5), 0.0);
-                    spheres.add(Rc::new(moving_sphere::MovingSphere::new(center, center2, 0.0, 1.0, 0.2, Rc::clone(&mat_sphere))));
-                } else if choose_mat < 0.95 {
+                    if choose_mat < 0.25 {
+                        spheres.add(Rc::new(moving_sphere::MovingSphere::new(center, center2, 0.0, 1.0, 0.2, mat_sphere)));
+                    } else {
+                        spheres.add(Rc::new(sphere::Sphere::new(center, 0.2, mat_sphere)))
+                    }
+                } else if choose_mat < 0.75 {
                     // metal
                     let albedo = random_range(0.5, 1.0);
                     let fuzz = random_double_range(0.0, 0.5);
@@ -119,14 +123,15 @@ fn earth() -> hittable_list::HittableList {
 fn simple_light() -> hittable_list::HittableList {
     let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
 
-    let pertext: Rc<dyn Texture> = Rc::new(MarbleNoiseTexture::new_sc(4.0));
+    let pertext: Rc<dyn Texture> = Rc::new(TurbNoiseTexture::new_sc(0.5));
     objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::new(Lambertian::new_txtr(&pertext)))));
-    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  2.0, 0.0), 2.0, Rc::new(Lambertian::new_txtr(&pertext)))));
+    let pertext: Rc<dyn Texture> = Rc::new(MarbleNoiseTexture::new_sc_clr(3.5, Color::new(4.2, 4.4, 4.4)));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  2.0, 0.0), 2.0, Rc::new(DiffuseLight::new_txtr(pertext)))));
 
-    let difflight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
+    //let difflight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
     //let grnlight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(0.0, 12.0, 0.0)));
-    objects.add(Rc::new(aarect::XYRect::new(3.0, 5.0, 1.0, 3.0, -2.0, Rc::clone(&difflight))));
-    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 7.0, 0.0), 2.0, Rc::clone(&difflight))));
+    //objects.add(Rc::new(aarect::XYRect::new(3.0, 5.0, 1.0, 3.0, -2.0, Rc::clone(&difflight))));
+    //objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 7.0, 0.0), 2.0, Rc::clone(&difflight))));
 
     return objects
 }
@@ -249,6 +254,20 @@ fn final_scene() -> hittable_list::HittableList {
     return objects
 }
 
+fn glow_earth() -> hittable_list::HittableList {
+    let mut objects = hittable_list::HittableList {objects: Vec::new()};
+
+    let earth_txtr: Rc<dyn Texture> = Rc::new(ImageTexture::new("earthmap.jpg"));
+    let earth_surface: Rc<dyn Material> = Rc::new(DiffuseLight::new_txtr(earth_txtr));
+    let globe = Rc::new(sphere::Sphere::new(Point::new(0.0, 0.0, 0.0), 2.0, Rc::clone(&earth_surface)));
+    objects.add(globe);
+
+    let _wall: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(1.0, 1.0, 1.0)));
+    //objects.add(Rc::new(aarect::YZRect))
+
+    return objects;
+}
+
 fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
@@ -290,9 +309,10 @@ fn main() {
     #[allow(unused_assignments)]
     let mut background = Color::new(0.0, 0.0, 0.0);
 
-    match 0 {
+    match 5 {
         1 => {
             world = random_scene();
+            image_width = 1200;
             background = Color::new(0.70, 0.80, 1.00);
             lookfrom = Point::new(13.0, 2.0, 3.0);
             lookat = Point::new(0.0, 0.0, 0.0);
@@ -354,7 +374,7 @@ fn main() {
             vfov = 40.0;
         }
 
-        8 | _ => {
+        8 => {
             world = final_scene();
             aspect_ratio = 1.0;
             image_width = 800;
@@ -363,6 +383,14 @@ fn main() {
             lookfrom = Point::new(478.0, 278.0, -600.0);
             lookat = Point::new(278.0, 278.0, 0.0);
             vfov = 400.0;
+        }
+
+        9 | _=> {
+            world = earth();
+            background = Color::new(0.0, 0.0, 0.00);
+            lookfrom = Point::new(13.0, 2.0, 3.0);
+            lookat = Point::new(0.0, 0.0, 0.0);
+            vfov = 20.0
         }
     }
 

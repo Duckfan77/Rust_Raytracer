@@ -67,21 +67,26 @@ impl Texture for CheckerTexture {
 pub struct NoiseTexture {
     pub noise: Perlin,
     pub scale: f64,
+    pub color: Color,
 }
 
 impl NoiseTexture {
     pub fn new() -> NoiseTexture {
-        NoiseTexture {noise: Perlin::new(), scale: 1.0}
+        NoiseTexture {noise: Perlin::new(), scale: 1.0, color: Color::new(1.0, 1.0, 1.0)}
     }
 
     pub fn new_sc(sc: f64) -> NoiseTexture {
-        NoiseTexture {noise: Perlin::new(), scale: sc}
+        NoiseTexture {noise: Perlin::new(), scale: sc, color: Color::new(1.0, 1.0, 1.0)}
+    }
+
+    pub fn new_sc_clr(scale: f64, color: Color) -> NoiseTexture {
+        NoiseTexture {noise: Perlin::new(), scale: scale, color: color}
     }
 }
 
 impl Texture for NoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
-        return Color::new(1.0, 1.0, 1.0) * 0.5 * (1.0 + self.noise.noise(&(self.scale * *p)))
+        return self.color * 0.5 * (1.0 + self.noise.noise(&(self.scale * *p)))
     }
 }
 
@@ -89,21 +94,26 @@ impl Texture for NoiseTexture {
 pub struct TurbNoiseTexture {
     pub noise: Perlin,
     pub scale: f64,
+    pub color: Color,
 }
 
 impl TurbNoiseTexture {
     pub fn new() -> TurbNoiseTexture {
-        TurbNoiseTexture {noise: Perlin::new(), scale: 1.0}
+        TurbNoiseTexture {noise: Perlin::new(), scale: 1.0, color: Color::new(1.0, 1.0, 1.0)}
     }
 
     pub fn new_sc(sc: f64) -> TurbNoiseTexture {
-        TurbNoiseTexture {noise: Perlin::new(), scale: sc}
+        TurbNoiseTexture {noise: Perlin::new(), scale: sc, color: Color::new(1.0, 1.0, 1.0)}
+    }
+
+    pub fn new_sc_clr(scale: f64, color: Color) -> TurbNoiseTexture {
+        TurbNoiseTexture {noise: Perlin::new(), scale: scale, color: color}
     }
 }
 
 impl Texture for TurbNoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
-        return Color::new(1.0, 1.0, 1.0) * self.noise.turb(&(self.scale * *p), 7);
+        return self.color * self.noise.turb(&(self.scale * *p), 7);
     }
 }
 

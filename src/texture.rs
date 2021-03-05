@@ -177,6 +177,85 @@ impl Texture for DualMarbleNoiseTexture {
     }
 }
 
+pub struct FragmentNoiseTexture {
+    pub noises: Vec<Perlin>,
+    pub fragment_noise: Perlin,
+    pub bg_color: Color,
+    pub ln_color: Color,
+    pub ln_range_bot: f64,
+    pub ln_range_top: f64,
+    pub frag_range_bot: f64,
+    pub frag_range_top: f64,
+    pub ln_scale: f64,
+    pub mask_scale: f64,
+}
+
+impl FragmentNoiseTexture {
+    pub fn new_e() -> FragmentNoiseTexture {
+        let mut noises: Vec<Perlin> = Vec::new();
+        for _ in 0..3 {
+            noises.push(Perlin::new());
+        }
+
+        FragmentNoiseTexture {
+            noises: noises,
+            fragment_noise: Perlin::new(),
+            bg_color: Color::new(1.0, 1.0, 1.0),
+            ln_color: Color::new(0.0, 0.0, 0.0),
+            ln_range_bot: -0.1,
+            ln_range_top: 0.0,
+            frag_range_bot: -0.1,
+            frag_range_top: 0.1,
+            ln_scale: 1.0,
+            mask_scale: 1.0,
+        }
+    }
+
+    pub fn new(num_noises: usize, bg: Color, ln: Color, ln_r_bot: f64, ln_r_top: f64, frag_r_bot: f64, frag_r_top: f64, ln_scale: f64, mask_scale: f64) -> FragmentNoiseTexture {
+        let mut noises: Vec<Perlin> = Vec::with_capacity(num_noises);
+        for _ in 0..num_noises {
+            noises.push(Perlin::new());
+        }
+
+        FragmentNoiseTexture {
+            noises: noises,
+            fragment_noise: Perlin::new(),
+            bg_color: bg,
+            ln_color: ln,
+            ln_range_bot: ln_r_bot,
+            ln_range_top: ln_r_top,
+            frag_range_bot: frag_r_bot,
+            frag_range_top: frag_r_top,
+            ln_scale: ln_scale,
+            mask_scale: mask_scale,
+        }
+    }
+}
+
+impl Texture for FragmentNoiseTexture {
+    fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
+        //Create lines
+        let mut ln = false;
+        for n in &self.noises {
+            let v = n.noise(&(self.ln_scale * *p));
+            if self.ln_range_bot < v && self.ln_range_top > v {
+                ln = true;
+                break;
+            }
+        }
+
+        //break up lines
+        let v = self.fragment_noise.noise(&(self.mask_scale * *p));
+        ln &= !(self.frag_range_bot < v && self.frag_range_top > v);
+
+        return if ln {
+            self.ln_color
+        } else {
+            self.bg_color
+        }
+    }
+}
+
 const BYTES_PER_PIXEL: i32 = 3;
 
 pub struct ImageTexture {

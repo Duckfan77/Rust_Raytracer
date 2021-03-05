@@ -287,6 +287,20 @@ fn bg() -> hittable_list::HittableList {
     return objects
 }
 
+fn pandorba() -> hittable_list::HittableList {
+    let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+
+    let pertext: Rc<dyn Texture> = Rc::new(TurbNoiseTexture::new_sc_clr(0.5, Color::new(0.6078, 0.4627, 0.3255)));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::new(Lambertian::new_txtr(&pertext)))));
+    let pertext: Rc<dyn Texture> = Rc::new(DualMarbleNoiseTexture::new_sc_clr_weight(1.0, Color::new(0.0, 0.0, 1.0)*1.0, Color::new(1.0, 1.0, 1.0)*1.0, 1.5));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 3.0, 0.0), 2.0, Rc::new(DiffuseLight::new_txtr(pertext)))));
+
+    let _fog: Rc<dyn Hittable> = Rc::new(sphere::Sphere::new(Point::new(0.0, 0.0, 0.0), 10.0, Rc::new(Lambertian::new(Color::new_e()))));
+    //objects.add(Rc::new(constant_medium::ConstantMedium::new(fog, 0.01, Color::new(1.0, 1.0, 1.0))));
+
+    return objects
+}
+
 fn noises() -> hittable_list::HittableList {
     let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
 
@@ -342,7 +356,7 @@ fn main() {
     #[allow(unused_assignments)]
     let mut background = Color::new(0.0, 0.0, 0.0);
 
-    match 5 {
+    match 12 {
         1 => {
             world = random_scene();
             image_width = 1200;
@@ -430,6 +444,15 @@ fn main() {
             world = bg();
             sample_per_pixel = 400;
             background = Color::new(0.0, 0.0, 0.0);
+            lookfrom = Point::new(26.0, 3.0, 6.0);
+            lookat = Point::new(0.0, 2.0, 0.0);
+            vfov = 20.0;
+        }
+
+        11 => {
+            world = pandorba();
+            sample_per_pixel = 400;
+            background = Color::new(1.0, 1.0, 1.0)*0.01;
             lookfrom = Point::new(26.0, 3.0, 6.0);
             lookat = Point::new(0.0, 2.0, 0.0);
             vfov = 20.0;

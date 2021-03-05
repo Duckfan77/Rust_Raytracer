@@ -268,6 +268,39 @@ fn glow_earth() -> hittable_list::HittableList {
     return objects;
 }
 
+fn bg() -> hittable_list::HittableList {
+    let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+
+    let pertext: Rc<dyn Texture> = Rc::new(TurbNoiseTexture::new_sc(0.5));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::new(Lambertian::new_txtr(&pertext)))));
+    let pertext: Rc<dyn Texture> = Rc::new(MarbleNoiseTexture::new_sc_clr(3.5, Color::new(1.0/3.0, 2.0/3.0, 2.0/3.0)*1.5));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 3.0, 0.0), 2.0, Rc::new(DiffuseLight::new_txtr(pertext)))));
+
+    //let difflight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
+    //let grnlight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(0.0, 12.0, 0.0)));
+    //objects.add(Rc::new(aarect::XYRect::new(3.0, 5.0, 1.0, 3.0, -2.0, Rc::clone(&difflight))));
+    //objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 7.0, 0.0), 2.0, Rc::clone(&difflight))));
+
+    let wall: Rc<dyn Material> = Rc::new(Metal::new(Color::new(1.0, 1.0, 1.0), 0.0));
+    objects.add(Rc::new(aarect::YZRect::new(0.0, 6.0, -3.0, 3.0, -4.0, wall)));
+
+    return objects
+}
+
+fn noises() -> hittable_list::HittableList {
+    let mut objects = hittable_list::HittableList {objects: Vec::with_capacity(10)};
+
+    let perlin: Rc<dyn Texture> = Rc::new(NoiseTexture::new_sc(10.0));
+    let turb: Rc<dyn Texture> = Rc::new(TurbNoiseTexture::new_sc(10.0));
+    let marble: Rc<dyn Texture> = Rc::new(MarbleNoiseTexture::new_sc(10.0));
+
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -2.0, 0.0), 1.0, Rc::new(Lambertian::new_txtr(&perlin)))));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  0.0, 0.0), 1.0, Rc::new(Lambertian::new_txtr(&turb)))));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  2.0, 0.0), 1.0, Rc::new(Lambertian::new_txtr(&marble)))));
+
+    return objects
+}
+
 fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, depth: u32) -> Color{
     let mut rec = hittable::HitRecord::new();
 
@@ -385,12 +418,29 @@ fn main() {
             vfov = 400.0;
         }
 
-        9 | _=> {
+        9 => {
             world = earth();
             background = Color::new(0.0, 0.0, 0.00);
             lookfrom = Point::new(13.0, 2.0, 3.0);
             lookat = Point::new(0.0, 0.0, 0.0);
             vfov = 20.0
+        }
+
+        10 => {
+            world = bg();
+            sample_per_pixel = 400;
+            background = Color::new(0.0, 0.0, 0.0);
+            lookfrom = Point::new(26.0, 3.0, 6.0);
+            lookat = Point::new(0.0, 2.0, 0.0);
+            vfov = 20.0;
+        }
+
+        12 | _=> {
+            world = noises();
+            background = Color::new(0.70, 0.80, 1.00);
+            lookfrom = Point::new(13.0, 2.0, 3.0);
+            lookat = Point::new(0.0, 0.0, 0.0);
+            vfov = 20.0;
         }
     }
 

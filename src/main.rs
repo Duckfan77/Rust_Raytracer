@@ -125,12 +125,12 @@ fn simple_light() -> hittable_list::HittableList {
 
     let pertext: Rc<dyn Texture> = Rc::new(TurbNoiseTexture::new_sc(0.5));
     objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::new(Lambertian::new_txtr(&pertext)))));
-    let pertext: Rc<dyn Texture> = Rc::new(MarbleNoiseTexture::new_sc_clr(3.5, Color::new(4.2, 4.4, 4.4)));
-    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  2.0, 0.0), 2.0, Rc::new(DiffuseLight::new_txtr(pertext)))));
+    let pertext: Rc<dyn Texture> = Rc::new(MarbleNoiseTexture::new_sc_clr(3.5, Color::new(1.0, 1.0, 1.0)));
+    objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0,  2.0, 0.0), 2.0, Rc::new(Lambertian::new_txtr(&pertext)))));
 
-    //let difflight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
+    let difflight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(4.0, 4.0, 4.0)));
     //let grnlight: Rc<dyn Material> = Rc::new(DiffuseLight::new(Color::new(0.0, 12.0, 0.0)));
-    //objects.add(Rc::new(aarect::XYRect::new(3.0, 5.0, 1.0, 3.0, -2.0, Rc::clone(&difflight))));
+    objects.add(Rc::new(aarect::XYRect::new(3.0, 5.0, 1.0, 3.0, -2.0, Rc::clone(&difflight))));
     //objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 7.0, 0.0), 2.0, Rc::clone(&difflight))));
 
     return objects

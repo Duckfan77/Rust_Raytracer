@@ -144,6 +144,38 @@ impl Texture for MarbleNoiseTexture {
     }
 }
 
+pub struct DualMarbleNoiseTexture {
+    pub noise: Perlin,
+    pub scale: f64,
+    pub color1: Color,
+    pub color2: Color,
+    pub weight: f64,
+}
+
+impl DualMarbleNoiseTexture {
+    pub fn new() -> DualMarbleNoiseTexture {
+        DualMarbleNoiseTexture {noise: Perlin::new(), scale: 1.0, color1: Color::new(1.0, 1.0, 1.0), color2: Color::new_e(), weight: 1.0}
+    }
+
+    pub fn new_sc(sc: f64) -> DualMarbleNoiseTexture {
+        DualMarbleNoiseTexture {noise: Perlin::new(), scale: sc, color1: Color::new(1.0, 1.0, 1.0), color2: Color::new_e(), weight: 1.0}
+    }
+
+    pub fn new_sc_clr(scale: f64, color1: Color, color2: Color) -> DualMarbleNoiseTexture {
+        DualMarbleNoiseTexture {noise: Perlin::new(), scale: scale, color1: color1, color2: color2, weight: 1.0}
+    }
+
+    pub fn new_sc_clr_weight(scale: f64, color1: Color, color2: Color, weight: f64) -> DualMarbleNoiseTexture {
+        DualMarbleNoiseTexture {noise: Perlin::new(), scale: scale, color1: color1, color2: color2, weight: weight}
+    }
+}
+
+impl Texture for DualMarbleNoiseTexture {
+    fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
+        let s = self.weight * 0.5 * (1.0 + f64::sin(self.scale*p.z() + 10.0*self.noise.turb(p, 7)));
+        return (self.color1 * s) + (self.color2 * (1.0-s))
+    }
+}
 
 const BYTES_PER_PIXEL: i32 = 3;
 

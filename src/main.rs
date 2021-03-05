@@ -292,11 +292,12 @@ fn pandorba() -> hittable_list::HittableList {
 
     let pertext: Rc<dyn Texture> = Rc::new(TurbNoiseTexture::new_sc_clr(0.5, Color::new(0.6078, 0.4627, 0.3255)));
     objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, -1000.0, 0.0), 1000.0, Rc::new(Lambertian::new_txtr(&pertext)))));
-    let pertext: Rc<dyn Texture> = Rc::new(DualMarbleNoiseTexture::new_sc_clr_weight(1.0, Color::new(0.0, 0.0, 1.0)*1.0, Color::new(1.0, 1.0, 1.0)*1.0, 1.5));
+    //let pertext: Rc<dyn Texture> = Rc::new(DualMarbleNoiseTexture::new_sc_clr_weight(1.0, Color::new(0.0, 0.0, 1.0)*1.0, Color::new(1.0, 1.0, 1.0)*1.0, 1.5));
+    let pertext: Rc<dyn Texture> = Rc::new(FragmentNoiseTexture::new(3, Color::new(0.0, 0.6, 0.8)*1.0, Color::new(0.8, 0.8, 1.0)*1.0, -0.1, 0.05, 0.1, 1.0, 1.0, 2.0));
     objects.add(Rc::new(sphere::Sphere::new(Point::new(0.0, 3.0, 0.0), 2.0, Rc::new(DiffuseLight::new_txtr(pertext)))));
 
-    let _fog: Rc<dyn Hittable> = Rc::new(sphere::Sphere::new(Point::new(0.0, 0.0, 0.0), 10.0, Rc::new(Lambertian::new(Color::new_e()))));
-    //objects.add(Rc::new(constant_medium::ConstantMedium::new(fog, 0.01, Color::new(1.0, 1.0, 1.0))));
+    //let _fog: Rc<dyn Hittable> = Rc::new(sphere::Sphere::new(Point::new(0.0, 3.0, 0.0), 10.0, Rc::new(Lambertian::new(Color::new_e()))));
+    //objects.add(Rc::new(constant_medium::ConstantMedium::new(_fog, 0.1, Color::new(1.0, 1.0, 1.0))));
 
     return objects
 }
@@ -356,7 +357,7 @@ fn main() {
     #[allow(unused_assignments)]
     let mut background = Color::new(0.0, 0.0, 0.0);
 
-    match 12 {
+    match 11 {
         1 => {
             world = random_scene();
             image_width = 1200;

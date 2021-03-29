@@ -4,14 +4,14 @@ use crate::{
     aabb::*,
 };
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub struct HittableList{
-    pub objects: Vec<Rc<dyn Hittable>>,
+    pub objects: Vec<Arc<dyn Hittable + Sync + Send>>,
 }
 
 impl HittableList{
-    pub fn new(object: Rc<dyn Hittable>) -> HittableList {
+    pub fn new(object: Arc<dyn Hittable + Sync + Send>) -> HittableList {
         HittableList {objects: vec![object; 1]}
     }
 
@@ -19,7 +19,7 @@ impl HittableList{
         self.objects.clear();
     }
 
-    pub fn add(&mut self, object: Rc<dyn Hittable>){
+    pub fn add(&mut self, object: Arc<dyn Hittable + Sync + Send>){
         self.objects.push(object);
     }
 }

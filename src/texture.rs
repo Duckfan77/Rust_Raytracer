@@ -4,7 +4,7 @@ use crate::{
     util::*,
 };
 use std::fmt::Debug;
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub trait Texture {
     fn value(&self, u: f64, v: f64, p: &Point) -> Color;
@@ -38,17 +38,17 @@ impl Texture for SolidColor {
 
 
 pub struct CheckerTexture {
-    pub odd: Rc<dyn Texture>,
-    pub even: Rc<dyn Texture>,
+    pub odd: Arc<dyn Texture + Sync + Send>,
+    pub even: Arc<dyn Texture + Sync + Send>,
 }
 
 impl CheckerTexture {
-    pub fn new(t0: &Rc<dyn Texture>, t1: &Rc<dyn Texture>) -> CheckerTexture {
-        CheckerTexture {even: Rc::clone(t0), odd: Rc::clone(t1)}
+    pub fn new(t0: &Arc<dyn Texture + Sync + Send>, t1: &Arc<dyn Texture + Sync + Send>) -> CheckerTexture {
+        CheckerTexture {even: Arc::clone(t0), odd: Arc::clone(t1)}
     }
 
     pub fn new_clr(c1: Color, c2: Color) -> CheckerTexture {
-        CheckerTexture {even: Rc::new(SolidColor::new(c1)), odd: Rc::new(SolidColor::new(c2))}
+        CheckerTexture {even: Arc::new(SolidColor::new(c1)), odd: Arc::new(SolidColor::new(c2))}
     }
 }
 

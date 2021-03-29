@@ -5,7 +5,7 @@ use crate::{
     texture::*,
 };
 use std::fmt::Debug;
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub trait Material {
     /// Scatters an incoming ray according to the Material implementing it and the HitRecord.
@@ -42,18 +42,18 @@ impl Material for NoHit {
 }
 
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Lambertian {
-    pub albedo: Rc<dyn Texture>,
+    pub albedo: Arc<dyn Texture + Sync + Send>,
 }
 
 impl Lambertian {
     pub fn new(a: Color) -> Lambertian {
-        Lambertian {albedo: Rc::new(SolidColor::new(a))}
+        Lambertian {albedo: Arc::new(SolidColor::new(a))}
     }
 
-    pub fn new_txtr(a: &Rc<dyn Texture>) -> Lambertian{
-        Lambertian {albedo: Rc::clone(a)}
+    pub fn new_txtr(a: &Arc<dyn Texture + Sync + Send>) -> Lambertian{
+        Lambertian {albedo: Arc::clone(a)}
     }
 }
 
@@ -136,15 +136,15 @@ impl Material for Dialectric {
 
 
 pub struct DiffuseLight {
-    emit: Rc<dyn Texture>,
+    emit: Arc<dyn Texture + Sync + Send>,
 }
 
 impl DiffuseLight {
     pub fn new(c: Color) -> DiffuseLight {
-        DiffuseLight {emit: Rc::new(SolidColor::new(c))}
+        DiffuseLight {emit: Arc::new(SolidColor::new(c))}
     }
 
-    pub fn new_txtr(a: Rc<dyn Texture>) -> DiffuseLight {
+    pub fn new_txtr(a: Arc<dyn Texture + Sync + Send>) -> DiffuseLight {
         DiffuseLight {emit: a}
     }
 }
@@ -161,11 +161,11 @@ impl Material for DiffuseLight {
 
 
 pub struct Isotropic {
-    albedo: Rc<dyn Texture>,
+    albedo: Arc<dyn Texture + Sync + Send>,
 }
 
 impl Isotropic {
-    pub fn new_txtr(a: Rc<dyn Texture>) -> Isotropic {
+    pub fn new_txtr(a: Arc<dyn Texture + Sync + Send>) -> Isotropic {
         Isotropic {
             albedo: a,
         }
@@ -173,7 +173,7 @@ impl Isotropic {
 
     pub fn new(c: Color) -> Isotropic {
         Isotropic {
-            albedo: Rc::new(SolidColor::new(c)),
+            albedo: Arc::new(SolidColor::new(c)),
         }
     }
 }

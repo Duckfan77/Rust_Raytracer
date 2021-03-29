@@ -7,12 +7,12 @@ use crate::{
     aabb::*,
 };
 use std::f64;
-use std::rc::Rc;
+use std::sync::Arc;
 use std::cmp::Ordering;
 
 pub struct BvhNode {
-    pub left: Rc<dyn Hittable>,
-    pub right: Rc<dyn Hittable>,
+    pub left: Arc<dyn Hittable + Sync + Send>,
+    pub right: Arc<dyn Hittable + Sync + Send>,
     pub bbox: AABB,
 }
 
@@ -22,9 +22,9 @@ impl BvhNode {
         BvhNode::new(&mut list.objects, 0, len, time0, time1)
     }
 
-    pub fn new(objects: &mut Vec<Rc<dyn Hittable>>, start: usize, end: usize, time0: f64, time1: f64) -> BvhNode {
-        let left: Rc<dyn Hittable>;
-        let right: Rc<dyn Hittable>;
+    pub fn new(objects: &mut Vec<Arc<dyn Hittable + Sync + Send>>, start: usize, end: usize, time0: f64, time1: f64) -> BvhNode {
+        let left: Arc<dyn Hittable + Sync + Send>;
+        let right: Arc<dyn Hittable + Sync + Send>;
         let bbox: AABB;
 
         let axis = random_int_range(0, 2);
@@ -35,22 +35,22 @@ impl BvhNode {
         let object_span: usize = end - start;
 
         if object_span == 1 {
-            left = Rc::clone(&objects[start]);
-            right = Rc::clone(&objects[start]);
+            left = Arc::clone(&objects[start]);
+            right = Arc::clone(&objects[start]);
         } else if object_span == 2 {
-            if comparator(Rc::clone(&objects[start]), Rc::clone(&objects[start+1])) == Ordering::Less{
-                left = Rc::clone(&objects[start]);
-                right = Rc::clone(&objects[start+1]);
+            if comparator(Arc::clone(&objects[start]), Arc::clone(&objects[start+1])) == Ordering::Less{
+                left = Arc::clone(&objects[start]);
+                right = Arc::clone(&objects[start+1]);
             }else{
-                left = Rc::clone(&objects[start+1]);
-                right = Rc::clone(&objects[start]);
+                left = Arc::clone(&objects[start+1]);
+                right = Arc::clone(&objects[start]);
             }
         } else {
-            objects.sort_unstable_by(|a, b| comparator(Rc::clone(&a), Rc::clone(&b)));
+            objects.sort_unstable_by(|a, b| comparator(Arc::clone(&a), Arc::clone(&b)));
 
             let mid = start + object_span/2;
-            left = Rc::new(BvhNode::new(objects, start, mid, time0, time1));
-            right = Rc::new(BvhNode::new(objects, mid, end, time0, time1));
+            left = Arc::new(BvhNode::new(objects, start, mid, time0, time1));
+            right = Arc::new(BvhNode::new(objects, mid, end, time0, time1));
         }
 
         let (abool, box_left) = left.bounding_box(time0, time1);
@@ -87,7 +87,7 @@ impl Hittable for BvhNode {
     }
 }
 
-pub fn box_compare(a: Rc<dyn Hittable>, b: Rc<dyn Hittable>, axis: usize) -> Ordering {
+pub fn box_compare(a: Arc<dyn Hittable + Sync + Send>, b: Arc<dyn Hittable + Sync + Send>, axis: usize) -> Ordering {
     let (abool, box_a) = a.bounding_box(0.0, 0.0);
     let (bbool, box_b) = b.bounding_box(0.0, 0.0);
 
@@ -101,14 +101,14 @@ pub fn box_compare(a: Rc<dyn Hittable>, b: Rc<dyn Hittable>, axis: usize) -> Ord
     }
 }
 
-pub fn box_x_compare(a: Rc<dyn Hittable>, b: Rc<dyn Hittable>) -> Ordering {
+pub fn box_x_compare(a: Arc<dyn Hittable + Sync + Send>, b: Arc<dyn Hittable + Sync + Send>) -> Ordering {
     return box_compare(a, b, 0)
 }
 
-pub fn box_y_compare(a: Rc<dyn Hittable>, b:Rc<dyn Hittable>) -> Ordering {
+pub fn box_y_compare(a: Arc<dyn Hittable + Sync + Send>, b:Arc<dyn Hittable + Sync + Send>) -> Ordering {
     return box_compare(a, b, 1)
 }
 
-pub fn box_z_compare(a: Rc<dyn Hittable>, b:Rc<dyn Hittable>) -> Ordering {
+pub fn box_z_compare(a: Arc<dyn Hittable + Sync + Send>, b:Arc<dyn Hittable + Sync + Send>) -> Ordering {
     return box_compare(a, b, 2)
 }

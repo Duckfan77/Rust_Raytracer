@@ -7,17 +7,17 @@ use crate::{
     util::*,
 };
 use std::f64;
-use std::rc::Rc;
+use std::sync::Arc;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Sphere{
     center: Point,
     radius: f64,
-    mat_ptr: Rc<dyn Material>,
+    mat_ptr: Arc<dyn Material + Sync + Send>,
 }
 
 impl Sphere{
-    pub fn new(cen: Point, r: f64, m: Rc<dyn Material>) -> Sphere{
+    pub fn new(cen: Point, r: f64, m: Arc<dyn Material + Sync + Send>) -> Sphere{
         Sphere {center: cen, radius: r, mat_ptr: m}
     }
 }
@@ -51,7 +51,7 @@ impl Hittable for Sphere{
                 let (u, v) = get_sphere_uv(&((rec.p - self.center) / self.radius));
                 rec.u = u;
                 rec.v = v;
-                rec.mat_ptr = Rc::clone(&self.mat_ptr);
+                rec.mat_ptr = Arc::clone(&self.mat_ptr);
                 return true
             }
 
@@ -64,7 +64,7 @@ impl Hittable for Sphere{
                 let (u, v) = get_sphere_uv(&((rec.p - self.center) / self.radius));
                 rec.u = u;
                 rec.v = v;
-                rec.mat_ptr = Rc::clone(&self.mat_ptr);
+                rec.mat_ptr = Arc::clone(&self.mat_ptr);
                 return true
             }
         }

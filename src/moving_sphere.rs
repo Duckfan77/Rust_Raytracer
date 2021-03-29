@@ -6,26 +6,26 @@ use crate::{
     aabb::*,
 };
 use std::f64;
-use std::rc::Rc;
+use std::sync::Arc;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct MovingSphere {
     center0: Point,
     center1: Point,
     time0: f64,
     time1: f64,
     radius: f64,
-    mat_ptr: Rc<dyn Material>,
+    mat_ptr: Arc<dyn Material + Sync + Send>,
 }
 
 impl MovingSphere {
-    pub fn new(cen0: Point, cen1: Point, t0: f64, t1: f64, r: f64, m: Rc<dyn Material>) -> MovingSphere {
+    pub fn new(cen0: Point, cen1: Point, t0: f64, t1: f64, r: f64, m: Arc<dyn Material + Sync + Send>) -> MovingSphere {
         MovingSphere {center0: cen0,
                       center1: cen1,
                       time0: t0,
                       time1: t1,
                       radius: r,
-                      mat_ptr: Rc::clone(&m)
+                      mat_ptr: Arc::clone(&m)
         }
     }
 
@@ -51,7 +51,7 @@ impl Hittable for MovingSphere {
                 rec.p = r.at(rec.t);
                 let outward_normal = (rec.p - self.center(r.time())) / self.radius;
                 rec.set_face_normal(&r, &outward_normal);
-                rec.mat_ptr = Rc::clone(&self.mat_ptr);
+                rec.mat_ptr = Arc::clone(&self.mat_ptr);
                 return true
             }
 
@@ -61,7 +61,7 @@ impl Hittable for MovingSphere {
                 rec.p = r.at(rec.t);
                 let outward_normal = (rec.p - self.center(r.time())) / self.radius;
                 rec.set_face_normal(&r, &outward_normal);
-                rec.mat_ptr = Rc::clone(&self.mat_ptr);
+                rec.mat_ptr = Arc::clone(&self.mat_ptr);
                 return true
             }
         }

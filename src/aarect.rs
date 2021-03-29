@@ -6,10 +6,10 @@ use crate::{
     vec3::*,
 };
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub struct XYRect {
-    mat_ptr: Rc<dyn Material>,
+    mat_ptr: Arc<dyn Material + Sync + Send>,
     x0: f64,
     x1: f64,
     y0: f64,
@@ -18,7 +18,7 @@ pub struct XYRect {
 }
 
 impl XYRect {
-    pub fn new(x0: f64, x1: f64, y0: f64, y1: f64, k: f64, mat: Rc<dyn Material>) -> XYRect {
+    pub fn new(x0: f64, x1: f64, y0: f64, y1: f64, k: f64, mat: Arc<dyn Material + Sync + Send>) -> XYRect {
         XYRect {
             mat_ptr: mat,
             x0: x0,
@@ -48,7 +48,7 @@ impl Hittable for XYRect {
         rec.t = t;
         let outward_normal = Vec3::new(0.0, 0.0, 1.0);
         rec.set_face_normal(r, &outward_normal);
-        rec.mat_ptr = Rc::clone(&self.mat_ptr);
+        rec.mat_ptr = Arc::clone(&self.mat_ptr);
         rec.p = r.at(t);
         return true
     }
@@ -62,7 +62,7 @@ impl Hittable for XYRect {
 
 
 pub struct XZRect {
-    mat_ptr: Rc<dyn Material>,
+    mat_ptr: Arc<dyn Material + Sync + Send>,
     x0: f64,
     x1: f64,
     z0: f64,
@@ -71,7 +71,7 @@ pub struct XZRect {
 }
 
 impl XZRect {
-    pub fn new(x0: f64, x1: f64, z0: f64, z1: f64, k: f64, mat: Rc<dyn Material>) -> XZRect {
+    pub fn new(x0: f64, x1: f64, z0: f64, z1: f64, k: f64, mat: Arc<dyn Material + Sync + Send>) -> XZRect {
         XZRect {
             mat_ptr: mat,
             x0: x0,
@@ -101,7 +101,7 @@ impl Hittable for XZRect {
         rec.t = t;
         let outward_normal = Vec3::new(0.0, 1.0, 0.0);
         rec.set_face_normal(r, &outward_normal);
-        rec.mat_ptr = Rc::clone(&self.mat_ptr);
+        rec.mat_ptr = Arc::clone(&self.mat_ptr);
         rec.p = r.at(t);
         return true
     }
@@ -115,7 +115,7 @@ impl Hittable for XZRect {
 
 
 pub struct YZRect {
-    mat_ptr: Rc<dyn Material>,
+    mat_ptr: Arc<dyn Material + Sync + Send>,
     y0: f64,
     y1: f64,
     z0: f64,
@@ -124,7 +124,7 @@ pub struct YZRect {
 }
 
 impl YZRect {
-    pub fn new(y0: f64, y1: f64, z0: f64, z1: f64, k: f64, mat: Rc<dyn Material>) -> YZRect {
+    pub fn new(y0: f64, y1: f64, z0: f64, z1: f64, k: f64, mat: Arc<dyn Material + Sync + Send>) -> YZRect {
         YZRect {
             mat_ptr: mat,
             y0: y0,
@@ -154,7 +154,7 @@ impl Hittable for YZRect {
         rec.t = t;
         let outward_normal = Vec3::new(1.0, 0.0, 0.0);
         rec.set_face_normal(r, &outward_normal);
-        rec.mat_ptr = Rc::clone(&self.mat_ptr);
+        rec.mat_ptr = Arc::clone(&self.mat_ptr);
         rec.p = r.at(t);
         return true
     }

@@ -8,27 +8,27 @@ use crate::{
     util::*,
 };
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub struct ConstantMedium {
-    boundary: Rc<dyn Hittable>,
-    phase_funct: Rc<dyn Material>,
+    boundary: Arc<dyn Hittable + Sync + Send>,
+    phase_funct: Arc<dyn Material + Sync + Send>,
     neg_inv_density: f64,
 }
 
 impl ConstantMedium {
-    pub fn new_txtr(b: Rc<dyn Hittable>, d: f64, a: Rc<dyn Texture>) -> ConstantMedium {
+    pub fn new_txtr(b: Arc<dyn Hittable + Sync + Send>, d: f64, a: Arc<dyn Texture + Sync + Send>) -> ConstantMedium {
         ConstantMedium {
             boundary: b,
-            phase_funct: Rc::new(Isotropic::new_txtr(a)),
+            phase_funct: Arc::new(Isotropic::new_txtr(a)),
             neg_inv_density: -1.0/d,
         }
     }
 
-    pub fn new(b: Rc<dyn Hittable>, d: f64, c: Color) -> ConstantMedium {
+    pub fn new(b: Arc<dyn Hittable + Sync + Send>, d: f64, c: Color) -> ConstantMedium {
         ConstantMedium {
             boundary: b,
-            phase_funct: Rc::new(Isotropic::new(c)),
+            phase_funct: Arc::new(Isotropic::new(c)),
             neg_inv_density: -1.0/d,
         }
     }
@@ -88,7 +88,7 @@ impl Hittable for ConstantMedium {
 
         rec.normal = Vec3::new(1.0, 0.0, 0.0);  //Arbitrary, doesn't really apply
         rec.front_face = true;                  //Arbitrary, doesn't really apply
-        rec.mat_ptr = Rc::clone(&self.phase_funct);
+        rec.mat_ptr = Arc::clone(&self.phase_funct);
 
         return true
     }

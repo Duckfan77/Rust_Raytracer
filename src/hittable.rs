@@ -1,15 +1,15 @@
 use crate::vec3::*;
 use crate::ray::Ray;
-use std::rc::Rc;
+use std::sync::Arc;
 use crate::materials::*;
 use crate::aabb::*;
 use crate::util::*;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct HitRecord{
     pub p: Point,
     pub normal: Vec3,
-    pub mat_ptr: Rc<dyn Material>,
+    pub mat_ptr: Arc<dyn Material + Sync + Send>,
     pub t: f64,
     pub u: f64,
     pub v: f64,
@@ -26,7 +26,7 @@ impl HitRecord{
         HitRecord {
             p: Point::new_e(),
             normal: Vec3::new_e(),
-            mat_ptr: Rc::new(NoHit::new()),
+            mat_ptr: Arc::new(NoHit::new()),
             t: 0.0,
             u: 0.0,
             v: 0.5,
@@ -37,7 +37,7 @@ impl HitRecord{
     pub fn clone_into(&self, target: &mut HitRecord){
         target.p = self.p.clone();
         target.normal = self.normal.clone();
-        target.mat_ptr = Rc::clone(&self.mat_ptr);
+        target.mat_ptr = Arc::clone(&self.mat_ptr);
         target.t = self.t.clone();
         target.u = self.u.clone();
         target.v = self.v.clone();
@@ -52,12 +52,12 @@ pub trait Hittable{
 
 
 pub struct Translate {
-    ptr: Rc<dyn Hittable>,
+    ptr: Arc<dyn Hittable + Sync + Send>,
     offset: Vec3,
 }
 
 impl Translate {
-    pub fn new(p: Rc<dyn Hittable>, displacement: &Vec3) -> Translate {
+    pub fn new(p: Arc<dyn Hittable + Sync + Send>, displacement: &Vec3) -> Translate {
         Translate {
             ptr: p,
             offset: *displacement,
@@ -95,7 +95,7 @@ impl Hittable for Translate {
 
 
 pub struct RotateX {
-    ptr: Rc<dyn Hittable>,
+    ptr: Arc<dyn Hittable + Sync + Send>,
     sin_theta: f64,
     cos_theta: f64,
     hasbox: bool,
@@ -103,7 +103,7 @@ pub struct RotateX {
 }
 
 impl RotateX {
-    pub fn new(p: Rc<dyn Hittable>, angle: f64) -> RotateX {
+    pub fn new(p: Arc<dyn Hittable + Sync + Send>, angle: f64) -> RotateX {
         let ptr = p;
         let sin: f64;
         let cos: f64;
@@ -187,7 +187,7 @@ impl Hittable for RotateX {
 
 
 pub struct RotateY {
-    ptr: Rc<dyn Hittable>,
+    ptr: Arc<dyn Hittable + Sync + Send>,
     sin_theta: f64,
     cos_theta: f64,
     hasbox: bool,
@@ -195,7 +195,7 @@ pub struct RotateY {
 }
 
 impl RotateY {
-    pub fn new(p: Rc<dyn Hittable>, angle: f64) -> RotateY {
+    pub fn new(p: Arc<dyn Hittable + Sync + Send>, angle: f64) -> RotateY {
         let ptr = p;
         let sin: f64;
         let cos: f64;
@@ -279,7 +279,7 @@ impl Hittable for RotateY {
 
 
 pub struct RotateZ {
-    ptr: Rc<dyn Hittable>,
+    ptr: Arc<dyn Hittable + Sync + Send>,
     sin_theta: f64,
     cos_theta: f64,
     hasbox: bool,
@@ -287,7 +287,7 @@ pub struct RotateZ {
 }
 
 impl RotateZ {
-    pub fn new(p: Rc<dyn Hittable>, angle: f64) -> RotateZ {
+    pub fn new(p: Arc<dyn Hittable + Sync + Send>, angle: f64) -> RotateZ {
         let ptr = p;
         let sin: f64;
         let cos: f64;

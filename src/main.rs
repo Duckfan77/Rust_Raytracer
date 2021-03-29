@@ -358,7 +358,7 @@ fn main() {
     #[allow(unused_assignments)]
     let mut background = Color::new(0.0, 0.0, 0.0);
 
-    match 11 {
+    match 7 {
         1 => {
             world = random_scene();
             image_width = 1200;
@@ -485,21 +485,25 @@ fn main() {
     let err = stderr();
     let mut errlock = err.lock();
 
+    let mut row: Vec<Color> = Vec::new();
+
     for j in (0..=(image_height-1)).rev() {
         write!(errlock, "\rScanlines remaining: {} ", j).expect("Fail to write to Err");
         errlock.flush().expect("Fail to flush stderr");
 
-        for i in 0..image_width {
-            let pixel = (0..sample_per_pixel).into_par_iter().map(|_| {
+        (0..image_width).into_par_iter().map(|i| {
+            (0..sample_per_pixel).into_iter().map(|_| {
                 let u = (i as f64 + random_double())/(image_width - 1) as f64;
                 let v = (j as f64 + random_double())/(image_height - 1) as f64;
 
                 let r = cam.get_ray(u, v);
 
                 ray_color(&r, &background, &world, max_depth)
-            }).reduce(|| Color::new_e(), |acc, x| acc + x);
+            }).fold( Color::new_e(), |acc, x| acc + x)
+        }).collect_into_vec(&mut row);
 
-            color::write_color(&mut outlock, pixel, sample_per_pixel);
+        for p in &row {
+            color::write_color(&mut outlock, *p, sample_per_pixel);
         }
     }
 }

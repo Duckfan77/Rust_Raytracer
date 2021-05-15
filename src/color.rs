@@ -22,15 +22,20 @@ pub fn write_color_ppm(out: &mut impl io::Write, pixel: vec3::Color, sample_coun
 {
     let (r,g,b) = convert_pixel(pixel, sample_count);
 
-    let _ = write!(out, "{} {} {}\n", (256.0 * clamp(r, 0.0, 0.999)) as u32, (256.0 * clamp(g, 0.0, 0.999)) as u32, (256.0 * clamp(b, 0.0, 0.999)) as u32);
+    let max_color = std::u8::MAX as f64 + 1.0;
+
+    let _ = write!(out, "{} {} {}\n", (max_color * clamp(r, 0.0, 0.999)) as u32, (max_color * clamp(g, 0.0, 0.999)) as u32, (max_color * clamp(b, 0.0, 0.999)) as u32);
 }
 
 #[allow(dead_code)]
 pub fn write_pixel_str_ppm<T: fmt::Write>(out: &mut T, pixel: vec3::Color, sample_count: u32) {//-> T{
     let (r,g,b) = convert_pixel(pixel, sample_count);
 
-    let _ = write!(out, "{} {} {}\n", (256.0 * clamp(r, 0.0, 0.999)) as u32, (256.0 * clamp(g, 0.0, 0.999)) as u32, (256.0 * clamp(b, 0.0, 0.999)) as u32);
+    let max_color = std::u8::MAX as f64 + 1.0;
+
+    let _ = write!(out, "{} {} {}\n", (max_color * clamp(r, 0.0, 0.999)) as u32, (max_color * clamp(g, 0.0, 0.999)) as u32, (max_color * clamp(b, 0.0, 0.999)) as u32);
 }
+
 pub fn write_pixel_img_8bpp(x: u32, y: u32, pixel: vec3::Color, sample_count: u32, img: &mut ImageBuffer<Rgb<u8>, Vec<u8>>) {
     let (r,g,b) = convert_pixel(pixel, sample_count);
 

@@ -503,7 +503,7 @@ fn main() {
         }).collect_into_vec(&mut row);
 
         for p in &row {
-            color::write_color(&mut outlock, *p, sample_per_pixel);
+            color::write_color_ppm(&mut outlock, *p, sample_per_pixel);
         }
     }
 }

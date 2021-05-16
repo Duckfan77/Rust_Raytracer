@@ -32,3 +32,21 @@ pub struct Picture{
     img: PictureBuf,
 }
 
+impl Picture{
+    //Getters for key values
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        (self.width as f64 / self.aspect_ratio) as u32
+    }
+
+    pub fn aspect_ratio(&self) -> f64 {
+        self.aspect_ratio
+    }
+
+    pub fn samples_per_pixel(&self) -> u32 {
+        self.samples
+    }
+}

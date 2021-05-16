@@ -49,4 +49,20 @@ impl Picture{
     pub fn samples_per_pixel(&self) -> u32 {
         self.samples
     }
+
+    pub fn ppm_x(&self) -> Option<u32> {
+        match self.img {
+            PictureBuf::Ppm{file: _, x, ..} => Some(x),
+
+            _ => None
+        }
+    }
+
+    pub fn ppm_y(&self) -> Option<u32> {
+        match self.img {
+            PictureBuf::Ppm{file: _, x: _, y} => Some(y),
+
+            _ => None
+        }
+    }
 }

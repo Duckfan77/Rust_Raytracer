@@ -22,6 +22,7 @@ mod perlin;
 mod aarect;
 mod boxes;
 mod constant_medium;
+mod picture;
 
 use vec3::*;
 use util::*;

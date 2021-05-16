@@ -20,6 +20,7 @@ pub enum PictureType {
 pub enum PictureErr {
     IOError {err: std::io::Error},
     InvalidArgs {err: String},
+    ImgError {err: image::ImageError},
 }
 
 /**
@@ -102,6 +103,137 @@ impl Picture{
             fname: fname.clone(),
             img: img,
         })
+    }
+
+    /**
+     * Writes full row of image
+     *
+     * Must have row size be equal to width of image
+     *
+     * Note for Ppm images:
+     * If Ppm image is not at x equal to row_num and y equal to 0, will error.
+     * Upon completion, Ppm image x is incremented by 1
+     * Writes to disk at this step, Ppm pixels are not later mutable
+     */
+    pub fn write_row(&mut self, row: &Vec<Color>, row_num: u32) -> Result<(), PictureErr>{
+        if row.len() != self.width as usize {
+            return Err(PictureErr::InvalidArgs{err: "Row Length Does Not Match Image Width".to_string()});
+        }
+
+        if row_num >= self.height() {
+            return Err(PictureErr::InvalidArgs{err: "Row beyond height of image".to_string()});
+        }
+
+        match &mut self.img {
+            //write ppm row
+            PictureBuf::Ppm{ref mut file, ref mut x, ref mut y} => {
+                if *y != 0 || *x != row_num {
+                    return Err(PictureErr::InvalidArgs{err: "Ppm file not at correct coordinates at start of write_row".to_string()})
+                }
+
+                for p in row {
+                    color::write_color_ppm(file, *p, self.samples);
+                }
+
+                *x += 1;
+            }
+
+            //Write Rgb8 row
+            PictureBuf::Rgb8{ref mut buf} => {
+                for (col,p) in row.iter().enumerate() {
+                    color::write_pixel_img_8bpc(row_num, col as u32, *p, self.samples, buf);
+                }
+            }
+
+            //Write Rgb16 row
+            PictureBuf::Rgb16{ref mut buf} => {
+                for (col,p) in row.iter().enumerate() {
+                    color::write_pixel_img_16bpc(row_num, col as u32, *p, self.samples, buf);
+                }
+            }
+        };
+
+        Ok(())
+    }
+
+    /**
+     * Writes pixel to image
+     *
+     * Must be within bounds of image
+     *
+     * Note for Ppm images:
+     * If Ppm image is not at x equal to row and y equal to col, will error.
+     * Upon completion, Ppm image index incremented by 1, first y, wrapping around to 0 and incrementing x if end of row
+     * Writes to disk at this step, Ppm pixels are not later mutable
+     */
+    pub fn write_pixel(&mut self, pixel: &Color, row: u32, col: u32) -> Result<(), PictureErr>{
+        if col >= self.width {
+            return Err(PictureErr::InvalidArgs{err: "Column beyond width of image".to_string()});
+        }
+
+        if row >= self.height() {
+            return Err(PictureErr::InvalidArgs{err: "Row beyond height of image".to_string()});
+        }
+
+        match &mut self.img {
+            PictureBuf::Ppm{ref mut file, ref mut x, ref mut y} => {
+                if *y != col || *x != row {
+                    return Err(PictureErr::InvalidArgs{err: "Ppm file not at correct coordinates at start of write_pixel".to_string()})
+                }
+
+                color::write_color_ppm(file, *pixel, self.samples);
+
+                *y += 1;
+                if *y == self.width {
+                    *y = 0;
+                    *x += 1;
+                }
+            }
+
+            PictureBuf::Rgb8{ref mut buf} => {
+                color::write_pixel_img_8bpc(row, col, *pixel, self.samples, buf);
+            }
+
+            PictureBuf::Rgb16{ref mut buf} => {
+                color::write_pixel_img_16bpc(row, col, *pixel, self.samples, buf);
+            }
+        }
+
+        Ok(())
+    }
+
+    /**
+     * Saves data to file for Rgb8 and Rgb16 image types. Ppm is actively saving to disk at pixel writing time and this will simply flush the buffers.
+     */
+    pub fn save(&mut self) -> Result<(), PictureErr> {
+        match &mut self.img {
+            //flush Ppm
+            PictureBuf::Ppm{ref mut file, ..} => {
+                match file.flush() {
+                    Ok(_) => {}
+
+                    Err(e) => return Err(PictureErr::IOError{err: e})
+                }
+            }
+
+            PictureBuf::Rgb8{ref mut buf} => {
+                match buf.save(&self.fname) {
+                    Ok(_) => {},
+
+                    Err(e) => return Err(PictureErr::ImgError{err: e})
+                }
+            }
+
+            PictureBuf::Rgb16{ref mut buf} => {
+                match buf.save(&self.fname) {
+                    Ok(_) => {},
+
+                    Err(e) => return Err(PictureErr::ImgError{err: e})
+                }
+            }
+        };
+
+        Ok(())
     }
 
     //Getters for key values

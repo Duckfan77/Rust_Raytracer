@@ -17,6 +17,7 @@ pub enum PictureType {
     Rgb16,
 }
 
+#[derive(Debug)]
 pub enum PictureErr {
     IOError {err: std::io::Error},
     InvalidArgs {err: String},

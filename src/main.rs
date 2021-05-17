@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::io::{Write, stderr, stdout};
+use std::io::{Write, stderr};
 use std::sync::Arc;
 use std::f64;
 use rayon::prelude::*;
@@ -22,12 +22,14 @@ mod perlin;
 mod aarect;
 mod boxes;
 mod constant_medium;
+mod picture;
 
 use vec3::*;
 use util::*;
 use materials::*;
 use texture::*;
 use hittable::*;
+use picture::Picture;
 
 fn random_scene() -> hittable_list::HittableList {
     let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
@@ -341,7 +343,7 @@ fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, d
 }
 
 fn main() {
-    //Image
+    //Picture defaults
     let mut aspect_ratio = 16.0 / 9.0;
     let mut image_width = 1920;
     let mut sample_per_pixel = 100;
@@ -471,30 +473,28 @@ fn main() {
 
     // Camera
     let vup = Point::new(0.0, 1.0, 0.0);
-    let image_height = (image_width as f64 / aspect_ratio) as u32;
     let dist_to_focus = 10.0;
 
     let cam = camera::Camera::new(&lookfrom, &lookat, &vup, vfov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
+    //Image
+    let mut img = Picture::new(image_width, aspect_ratio, sample_per_pixel, &"Output.png".to_string(), picture::PictureType::Rgb8).expect("Error making image");
+
     //Render
-    print!("P3\n{} {}\n255\n", image_width, image_height);
-
-    let out = stdout();
-    let mut outlock = out.lock();
-
     let err = stderr();
     let mut errlock = err.lock();
 
     let mut row: Vec<Color> = Vec::new();
 
-    for j in (0..image_height).rev() {
+    for j in (0..img.height()).rev() {
+        let r = img.height()-j-1;
         write!(errlock, "\rScanlines remaining: {} ", j).expect("Fail to write to Err");
         errlock.flush().expect("Fail to flush stderr");
 
-        (0..image_width).into_par_iter().map(|i| {
-            (0..sample_per_pixel).into_iter().map(|_| {
-                let u = (i as f64 + random_double())/(image_width - 1) as f64;
-                let v = (j as f64 + random_double())/(image_height - 1) as f64;
+        (0..img.width()).into_par_iter().map(|i| {
+            (0..img.samples_per_pixel()).into_iter().map(|_| {
+                let u = (i as f64 + random_double())/(img.width() - 1) as f64;
+                let v = (j as f64 + random_double())/(img.height() - 1) as f64;
 
                 let r = cam.get_ray(u, v);
 
@@ -502,8 +502,8 @@ fn main() {
             }).fold( Color::new_e(), |acc, x| acc + x)
         }).collect_into_vec(&mut row);
 
-        for p in &row {
-            color::write_color(&mut outlock, *p, sample_per_pixel);
-        }
+        img.write_row(&row, r).expect("Error Writing Row");
     }
+
+    img.save().expect("Error Saving To File");
 }

@@ -487,7 +487,7 @@ fn main() {
 
     let mut row: Vec<Color> = Vec::new();
 
-    for j in (0..=(image_height-1)).rev() {
+    for j in (0..image_height).rev() {
         write!(errlock, "\rScanlines remaining: {} ", j).expect("Fail to write to Err");
         errlock.flush().expect("Fail to flush stderr");
 

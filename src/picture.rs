@@ -112,8 +112,8 @@ impl Picture{
      * Must have row size be equal to width of image
      *
      * Note for Ppm images:
-     * If Ppm image is not at x equal to row_num and y equal to 0, will error.
-     * Upon completion, Ppm image x is incremented by 1
+     * If Ppm image is not at y equal to row_num and x equal to 0, will error.
+     * Upon completion, Ppm image y is incremented by 1
      * Writes to disk at this step, Ppm pixels are not later mutable
      */
     pub fn write_row(&mut self, row: &Vec<Color>, row_num: u32) -> Result<(), PictureErr>{
@@ -128,7 +128,7 @@ impl Picture{
         match &mut self.img {
             //write ppm row
             PictureBuf::Ppm{ref mut file, ref mut x, ref mut y} => {
-                if *y != 0 || *x != row_num {
+                if *x != 0 || *y != row_num {
                     return Err(PictureErr::InvalidArgs{err: "Ppm file not at correct coordinates at start of write_row".to_string()})
                 }
 
@@ -136,20 +136,20 @@ impl Picture{
                     color::write_color_ppm(file, *p, self.samples);
                 }
 
-                *x += 1;
+                *y += 1;
             }
 
             //Write Rgb8 row
             PictureBuf::Rgb8{ref mut buf} => {
                 for (col,p) in row.iter().enumerate() {
-                    color::write_pixel_img_8bpc(row_num, col as u32, *p, self.samples, buf);
+                    color::write_pixel_img_8bpc(col as u32, row_num, *p, self.samples, buf);
                 }
             }
 
             //Write Rgb16 row
             PictureBuf::Rgb16{ref mut buf} => {
                 for (col,p) in row.iter().enumerate() {
-                    color::write_pixel_img_16bpc(row_num, col as u32, *p, self.samples, buf);
+                    color::write_pixel_img_16bpc(col as u32, row_num, *p, self.samples, buf);
                 }
             }
         };
@@ -178,25 +178,25 @@ impl Picture{
 
         match &mut self.img {
             PictureBuf::Ppm{ref mut file, ref mut x, ref mut y} => {
-                if *y != col || *x != row {
+                if *x != col || *y != row {
                     return Err(PictureErr::InvalidArgs{err: "Ppm file not at correct coordinates at start of write_pixel".to_string()})
                 }
 
                 color::write_color_ppm(file, *pixel, self.samples);
 
-                *y += 1;
-                if *y == self.width {
-                    *y = 0;
-                    *x += 1;
+                *x += 1;
+                if *x == self.width {
+                    *x = 0;
+                    *y += 1;
                 }
             }
 
             PictureBuf::Rgb8{ref mut buf} => {
-                color::write_pixel_img_8bpc(row, col, *pixel, self.samples, buf);
+                color::write_pixel_img_8bpc(col, row, *pixel, self.samples, buf);
             }
 
             PictureBuf::Rgb16{ref mut buf} => {
-                color::write_pixel_img_16bpc(row, col, *pixel, self.samples, buf);
+                color::write_pixel_img_16bpc(col, row, *pixel, self.samples, buf);
             }
         }
 

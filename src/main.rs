@@ -416,7 +416,7 @@ fn main() {
     #[allow(unused_assignments)]
     let mut background = Color::new(0.0, 0.0, 0.0);
 
-    match 7 {
+    match scene {
         1 => {
             world = random_scene();
             image_width = 1200;
@@ -527,6 +527,24 @@ fn main() {
         }
     }
 
+    //Collect User Values and Override Scene if user provided
+    match value_t!(matches, "Image Width", u32){
+        Ok(y) => {image_width = y}
+        Err(_) => {}
+    }
+
+    match value_t!(matches, "Samplke Count", u32){
+        Ok(y) => {sample_per_pixel = y}
+        Err(_) => {}
+    }
+
+    match value_t!(matches, "Bounce Depth", u32){
+        Ok(y) => {max_depth = y}
+        Err(_) => {}
+    }
+
+    println!("{} {} {}", image_width, sample_per_pixel, max_depth);
+
     // Camera
     let vup = Point::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
@@ -534,7 +552,7 @@ fn main() {
     let cam = camera::Camera::new(&lookfrom, &lookat, &vup, vfov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     //Image
-    let mut img = Picture::new(image_width, aspect_ratio, sample_per_pixel, &"Output.png".to_string(), picture::PictureType::Rgb8).expect("Error making image");
+    let mut img = Picture::new(image_width, aspect_ratio, sample_per_pixel, &String::from(outname), outtype).expect("Error making image");
 
     //Render
     let err = stderr();

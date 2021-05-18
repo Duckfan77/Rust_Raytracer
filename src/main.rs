@@ -347,15 +347,67 @@ fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, d
 }
 
 fn main() {
-    //Picture defaults
+    //Get Initial Values from Command Line
+    let matches = App::new("Rust Raytracer")
+        .arg(Arg::with_name("Out File")
+            .value_name("FILE")
+            .index(1)
+            .required(true))
+        .arg(Arg::with_name("Out Type")
+            .value_name("TYPE")
+            .possible_values(&picture::PictureType::variants())
+            .case_insensitive(true)
+            .required(true)
+            .index(2))
+        .arg(Arg::with_name("Scene Number")
+            .value_name("SCENE")
+            .long("scene")
+            .short("s")
+            .default_value("0")
+            .validator(|x| match x.parse::<u32>(){
+                Ok(y) => {if y > MAX_SCENE {Err("The value is above the top scene number".to_string())} else {Ok(())}},
+                Err(_) => Err("The value is not a valid unsigned integer".to_string())
+            }))
+        .arg(Arg::with_name("Image Width")
+            .value_name("WIDTH")
+            .long("width")
+            .short("w")
+            .validator(|x| match x.parse::<u32>(){
+                Ok(y) => {if y == 0 {Err(String::from("The value must be non-zero"))} else {Ok(())}},
+                Err(_) => Err(String::from("The value is not a valid unsigned integer")),
+            }))
+        .arg(Arg::with_name("Sample Count")
+            .value_name("SAMPLES")
+            .long("samples")
+            .short("c")
+            .validator(|x| match x.parse::<u32>(){
+                Ok(y) => {if y == 0 {Err(String::from("The value must be non-zero"))} else {Ok(())}},
+                Err(_) => Err(String::from("The value is not a valid unsigned integer")),
+            }))
+        .arg(Arg::with_name("Bounce Depth")
+            .value_name("DEPTH")
+            .long("depth")
+            .short("d")
+            .validator(|x| match x.parse::<u32>(){
+                Ok(y) => {if y== 0 {Err(String::from("The value must be non-zero"))} else {Ok(())}},
+                Err(_) => Err(String::from("The value is not a valid unsigned integer")),
+            }))
+        .get_matches();
+
+    let scene = value_t!(matches, "Scene Number", u32).unwrap();
+    let outname = matches.value_of("Out File").unwrap();
+    let outtype = value_t!(matches, "Out Type", picture::PictureType).unwrap();
+
+    //Picture defaults - may be overridden by scene or by user
     let mut aspect_ratio = 16.0 / 9.0;
     let mut image_width = 1920;
     let mut sample_per_pixel = 100;
-    let max_depth = 50;
+    let mut max_depth = 50;
 
     // World
     let world: hittable_list::HittableList;
 
+    //Camera Defaults, may be overridden by specific scene
     let lookfrom: Point;
     let lookat: Point;
     #[allow(unused_assignments)]

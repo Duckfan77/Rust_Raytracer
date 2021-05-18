@@ -62,6 +62,8 @@ fn main() {
         background: Color::new(0.0, 0.0, 0.0),
         lookfrom: Point::new_e(),
         lookat: Point::new_e(),
+        vup: Point::new(0.0, 1.0, 0.0),
+        dist_to_focus: 10.0,
         vfov: 40.0,
         aperture: 0.0,
         sample_per_pixel: 100,
@@ -153,10 +155,7 @@ fn main() {
     }
 
     // Camera
-    let vup = Point::new(0.0, 1.0, 0.0);
-    let dist_to_focus = 10.0;
-
-    let cam = camera::Camera::new(&scene_dat.lookfrom, &scene_dat.lookat, &vup, scene_dat.vfov, scene_dat.aspect_ratio, scene_dat.aperture, dist_to_focus, 0.0, 1.0);
+    let cam = camera::Camera::new(&scene_dat.lookfrom, &scene_dat.lookat, &scene_dat.vup, scene_dat.vfov, scene_dat.aspect_ratio, scene_dat.aperture, scene_dat.dist_to_focus, 0.0, 1.0);
 
     //Image
     let mut img = Picture::new(scene_dat.image_width, scene_dat.aspect_ratio, scene_dat.sample_per_pixel, &String::from(outname), outtype).expect("Error making image");

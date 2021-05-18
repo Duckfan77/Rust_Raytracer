@@ -315,6 +315,8 @@ pub struct SceneData{
     pub background: Color,
     pub lookfrom: Point,
     pub lookat: Point,
+    pub vup: Point,
+    pub dist_to_focus: f64,
     pub vfov: f64,
     pub aperture: f64,
     pub sample_per_pixel: u32,

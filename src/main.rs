@@ -353,23 +353,33 @@ fn main() {
     let mut sample_per_pixel = 100;
     let mut max_depth = 50;
 
+    let sn_help = format!("Scene number to display, integer from 0 (which is treated the same as the max) to {}", MAX_SCENE);
+    let iw_str = format!("{}",image_width);
+    let sc_str = format!("{}",sample_per_pixel);
+    let md_str = format!("{}",max_depth);
+
     //Get Initial Values from Command Line
     let matches = App::new("Rust Raytracer")
         .arg(Arg::with_name("Out File")
             .value_name("FILE")
             .index(1)
+            .help("Sets the output file to write to")
             .required(true))
         .arg(Arg::with_name("Out Type")
             .value_name("TYPE")
             .possible_values(&picture::PictureType::variants())
             .case_insensitive(true)
             .required(true)
+            .help("Sets the image type.\n\nFor ppm image type, FILE exension does not matter. \n\n\
+            For rgb image types, FILE must be PNG or JPG, which will define output image type\n\
+            rgb8 and rgb16 set the number of bits per channel when preparing image to save\n")
             .index(2))
         .arg(Arg::with_name("Scene Number")
             .value_name("SCENE")
             .long("scene")
             .short("s")
             .default_value("0")
+            .help(&sn_help)
             .validator(|x| match x.parse::<u32>(){
                 Ok(y) => {if y > MAX_SCENE {Err("The value is above the top scene number".to_string())} else {Ok(())}},
                 Err(_) => Err("The value is not a valid unsigned integer".to_string())
@@ -378,6 +388,8 @@ fn main() {
             .value_name("WIDTH")
             .long("width")
             .short("w")
+            .help("Width of the output image in pixels")
+            .default_value(&iw_str)
             .validator(|x| match x.parse::<u32>(){
                 Ok(y) => {if y == 0 {Err(String::from("The value must be non-zero"))} else {Ok(())}},
                 Err(_) => Err(String::from("The value is not a valid unsigned integer")),
@@ -386,6 +398,8 @@ fn main() {
             .value_name("SAMPLES")
             .long("samples")
             .short("c")
+            .help("Samples per pixel. More generally produces a sharper image, but greatly increases render time")
+            .default_value(&sc_str)
             .validator(|x| match x.parse::<u32>(){
                 Ok(y) => {if y == 0 {Err(String::from("The value must be non-zero"))} else {Ok(())}},
                 Err(_) => Err(String::from("The value is not a valid unsigned integer")),
@@ -394,6 +408,8 @@ fn main() {
             .value_name("DEPTH")
             .long("depth")
             .short("d")
+            .help("Maximum number of bounces permitted per ray. Diminishing returns for quality when increased, unlikely to need changing from default")
+            .default_value(&md_str)
             .validator(|x| match x.parse::<u32>(){
                 Ok(y) => {if y== 0 {Err(String::from("The value must be non-zero"))} else {Ok(())}},
                 Err(_) => Err(String::from("The value is not a valid unsigned integer")),

@@ -12,3 +12,4 @@ target/
 # Output files for images:
 output/
 *.jpg
+*.exe

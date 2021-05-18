@@ -3,6 +3,7 @@
 pub const INFINITY: f64 = f64::INFINITY;
 pub const PI: f64 = std::f64::consts::PI;
 pub const E: f64 = std::f64::consts::E;
+pub const MAX_SCENE: u32 = 12;
 
 // Util Functions
 pub fn degs_to_rads(deg: f64) -> f64 {

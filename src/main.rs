@@ -31,6 +31,10 @@ use texture::*;
 use hittable::*;
 use picture::Picture;
 
+#[macro_use]
+extern crate clap;
+use clap::{App, Arg};
+
 fn random_scene() -> hittable_list::HittableList {
     let mut world = hittable_list::HittableList {objects: Vec::with_capacity(10)};
 

@@ -4,17 +4,20 @@ use std::io::Write;
 use crate::vec3::Color;
 use crate::color;
 
-/**
- * Public Picture Type enum to inform which file type to write.
- *
- * Ppm: 8 bit per channel PPM file, must be writen strictly in order
- * Rgb8: 8 bit per channel PNG or JPG, depending on file name
- * Rgb16: 16 bit per channel PNG or JPG, depending on file name
- */
-pub enum PictureType {
-    Ppm,
-    Rgb8,
-    Rgb16,
+arg_enum!{
+    /**
+     * Public Picture Type enum to inform which file type to write.
+     *
+     * Ppm: 8 bit per channel PPM file, must be writen strictly in order
+     * Rgb8: 8 bit per channel PNG or JPG, depending on file name
+     * Rgb16: 16 bit per channel PNG or JPG, depending on file name
+     */
+    #[derive(Debug, PartialEq)]
+    pub enum PictureType {
+        Ppm,
+        Rgb8,
+        Rgb16,
+    }
 }
 
 #[derive(Debug)]

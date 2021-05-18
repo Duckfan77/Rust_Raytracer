@@ -152,8 +152,6 @@ fn main() {
         Err(_) => {}
     }
 
-    println!("{} {} {}", scene_dat.image_width, scene_dat.sample_per_pixel, max_depth);
-
     // Camera
     let vup = Point::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;

@@ -347,6 +347,12 @@ fn ray_color(r: &ray::Ray, background: &Color, world: &dyn hittable::Hittable, d
 }
 
 fn main() {
+    //Picture defaults - may be overridden by scene or by user
+    let mut aspect_ratio = 16.0 / 9.0;
+    let mut image_width : u32 = 1920;
+    let mut sample_per_pixel = 100;
+    let mut max_depth = 50;
+
     //Get Initial Values from Command Line
     let matches = App::new("Rust Raytracer")
         .arg(Arg::with_name("Out File")
@@ -397,12 +403,6 @@ fn main() {
     let scene = value_t!(matches, "Scene Number", u32).unwrap();
     let outname = matches.value_of("Out File").unwrap();
     let outtype = value_t!(matches, "Out Type", picture::PictureType).unwrap();
-
-    //Picture defaults - may be overridden by scene or by user
-    let mut aspect_ratio = 16.0 / 9.0;
-    let mut image_width = 1920;
-    let mut sample_per_pixel = 100;
-    let mut max_depth = 50;
 
     // World
     let world: hittable_list::HittableList;

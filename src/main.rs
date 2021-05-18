@@ -95,6 +95,7 @@ fn main() {
             .short("s")
             .possible_values(&scene::Scene::variants())
             .default_value("CornellBox")
+            .case_insensitive(true)
             .help("Scene to Display"))
         .arg(Arg::with_name("Image Width")
             .value_name("WIDTH")

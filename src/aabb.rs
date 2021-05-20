@@ -48,7 +48,7 @@ impl AABB {
             }
         }
 
-        return true;
+        true
     }
 }
 
@@ -64,5 +64,5 @@ pub fn surrounding_box(box0: &AABB, box1: &AABB) -> AABB {
         f64::max(box0.max().z(), box1.max().z()),
     );
 
-    return AABB::new(&small, &big);
+    AABB::new(&small, &big)
 }

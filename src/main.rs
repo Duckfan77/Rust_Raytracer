@@ -41,7 +41,7 @@ fn ray_color(
     let mut rec = hittable::HitRecord::new();
 
     // Just return no light if past ray bounce limit
-    if depth <= 0 {
+    if depth == 0 {
         return Color::new(0.0, 0.0, 0.0);
     }
 
@@ -57,7 +57,7 @@ fn ray_color(
         return emitted;
     }
 
-    return emitted + attenuation * ray_color(&scattered, background, world, depth - 1);
+    emitted + attenuation * ray_color(&scattered, background, world, depth - 1)
 }
 
 fn main() {
@@ -144,28 +144,23 @@ fn main() {
     let world = scene::match_scene(scene, &mut scene_dat);
 
     //Collect User Values and Override Scene if user provided
-    match value_t!(matches, "Image Width", u32) {
-        Ok(y) => {
-            if matches.occurrences_of("Image Width") != 0 {
-                scene_dat.image_width = y
-            }
+    if let Ok(y) = value_t!(matches, "Image Width", u32) {
+        if matches.occurrences_of("Image Width") != 0{
+            scene_dat.image_width = y
         }
-        Err(_) => {}
     }
 
-    match value_t!(matches, "Sample Count", u32) {
-        Ok(y) => {
-            if matches.occurrences_of("Sample Count") != 0 {
-                scene_dat.sample_per_pixel = y
-            }
+    if let Ok(y) = value_t!(matches, "Sample Count", u32) {
+        if matches.occurrences_of("Sample Count") != 0 {
+            scene_dat.sample_per_pixel = y
         }
-        Err(_) => {}
     }
 
-    match value_t!(matches, "Bounce Depth", u32) {
-        Ok(y) => max_depth = y,
-        Err(_) => {}
+    if let Ok(y) = value_t!(matches, "Bounce Depth", u32) {
+        max_depth = y
     }
+
+    println!("{} {} {}", scene_dat.image_width, scene_dat.sample_per_pixel, max_depth);
 
     // Camera
     let cam = camera::Camera::new(

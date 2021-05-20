@@ -62,9 +62,9 @@ impl Texture for CheckerTexture {
     fn value(&self, u: f64, v: f64, p: &Point) -> Color {
         let sines = f64::sin(10.0 * p.x()) * f64::sin(10.0 * p.y()) * f64::sin(10.0 * p.z());
         if sines < 0.0 {
-            return self.odd.value(u, v, p);
+            self.odd.value(u, v, p)
         } else {
-            return self.even.value(u, v, p);
+            self.even.value(u, v, p)
         }
     }
 }
@@ -95,15 +95,15 @@ impl NoiseTexture {
     pub fn new_sc_clr(scale: f64, color: Color) -> NoiseTexture {
         NoiseTexture {
             noise: Perlin::new(),
-            scale: scale,
-            color: color,
+            scale,
+            color,
         }
     }
 }
 
 impl Texture for NoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
-        return self.color * 0.5 * (1.0 + self.noise.noise(&(self.scale * *p)));
+        self.color * 0.5 * (1.0 + self.noise.noise(&(self.scale * *p)))
     }
 }
 
@@ -133,15 +133,15 @@ impl TurbNoiseTexture {
     pub fn new_sc_clr(scale: f64, color: Color) -> TurbNoiseTexture {
         TurbNoiseTexture {
             noise: Perlin::new(),
-            scale: scale,
-            color: color,
+            scale,
+            color,
         }
     }
 }
 
 impl Texture for TurbNoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
-        return self.color * self.noise.turb(&(self.scale * *p), 7);
+        self.color * self.noise.turb(&(self.scale * *p), 7)
     }
 }
 
@@ -171,17 +171,17 @@ impl MarbleNoiseTexture {
     pub fn new_sc_clr(scale: f64, color: Color) -> MarbleNoiseTexture {
         MarbleNoiseTexture {
             noise: Perlin::new(),
-            scale: scale,
-            color: color,
+            scale,
+            color,
         }
     }
 }
 
 impl Texture for MarbleNoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
-        return self.color
+        self.color
             * 0.5
-            * (1.0 + f64::sin(self.scale * p.z() + 10.0 * self.noise.turb(p, 7)));
+            * (1.0 + f64::sin(self.scale * p.z() + 10.0 * self.noise.turb(p, 7)))
     }
 }
 
@@ -217,9 +217,9 @@ impl DualMarbleNoiseTexture {
     pub fn new_sc_clr(scale: f64, color1: Color, color2: Color) -> DualMarbleNoiseTexture {
         DualMarbleNoiseTexture {
             noise: Perlin::new(),
-            scale: scale,
-            color1: color1,
-            color2: color2,
+            scale,
+            color1,
+            color2,
             weight: 1.0,
         }
     }
@@ -232,10 +232,10 @@ impl DualMarbleNoiseTexture {
     ) -> DualMarbleNoiseTexture {
         DualMarbleNoiseTexture {
             noise: Perlin::new(),
-            scale: scale,
-            color1: color1,
-            color2: color2,
-            weight: weight,
+            scale,
+            color1,
+            color2,
+            weight,
         }
     }
 }
@@ -244,7 +244,7 @@ impl Texture for DualMarbleNoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
         let s =
             self.weight * 0.5 * (1.0 + f64::sin(self.scale * p.z() + 10.0 * self.noise.turb(p, 7)));
-        return (self.color1 * s) + (self.color2 * (1.0 - s));
+        (self.color1 * s) + (self.color2 * (1.0 - s))
     }
 }
 
@@ -269,7 +269,7 @@ impl FragmentNoiseTexture {
         }
 
         FragmentNoiseTexture {
-            noises: noises,
+            noises,
             fragment_noise: Perlin::new(),
             bg_color: Color::new(1.0, 1.0, 1.0),
             ln_color: Color::new(0.0, 0.0, 0.0),
@@ -299,7 +299,7 @@ impl FragmentNoiseTexture {
         }
 
         FragmentNoiseTexture {
-            noises: noises,
+            noises,
             fragment_noise: Perlin::new(),
             bg_color: bg,
             ln_color: ln,
@@ -307,8 +307,8 @@ impl FragmentNoiseTexture {
             ln_range_top: ln_r_top,
             frag_range_bot: frag_r_bot,
             frag_range_top: frag_r_top,
-            ln_scale: ln_scale,
-            mask_scale: mask_scale,
+            ln_scale,
+            mask_scale,
         }
     }
 }
@@ -329,7 +329,7 @@ impl Texture for FragmentNoiseTexture {
         let v = self.fragment_noise.noise(&(self.mask_scale * *p));
         ln &= !(self.frag_range_bot < v && self.frag_range_top > v);
 
-        return if ln { self.ln_color } else { self.bg_color };
+        if ln { self.ln_color } else { self.bg_color }
     }
 }
 
@@ -370,10 +370,10 @@ impl ImageTexture {
         bytes = BYTES_PER_PIXEL * width;
 
         ImageTexture {
-            width: width,
-            height: height,
+            width,
+            height,
             bytes_per_scanline: bytes,
-            data: data,
+            data,
         }
     }
 }

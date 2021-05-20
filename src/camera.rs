@@ -44,12 +44,12 @@ impl Camera {
 
         Camera {
             origin: *origin,
-            horizontal: horizontal,
-            vertical: vertical,
-            lower_left_corner: lower_left_corner,
-            u: u,
-            v: v,
-            w: w,
+            horizontal,
+            vertical,
+            lower_left_corner,
+            u,
+            v,
+            w,
             lens_radius: aperture / 2.0,
             time0: t0,
             time1: t1,

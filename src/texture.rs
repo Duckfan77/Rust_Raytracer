@@ -361,7 +361,7 @@ impl ImageTexture {
                 }
             },
             Err(_) => {
-                eprint!("ERROR: Could not load texture image file '{}'.\n", filename);
+                eprintln!("ERROR: Could not load texture image file '{}'.", filename);
                 width = -1;
                 height = -1;
             }

@@ -69,9 +69,9 @@ impl Box {
         )));
 
         Box {
-            box_min: box_min,
-            box_max: box_max,
-            sides: sides,
+            box_min,
+            box_max,
+            sides,
         }
     }
 }
@@ -79,10 +79,10 @@ impl Box {
 impl Hittable for Box {
     fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
         let outbox = AABB::new(&self.box_min, &self.box_max);
-        return (true, outbox);
+        (true, outbox)
     }
 
     fn hit(&self, r: &Ray, t0: f64, t1: f64, rec: &mut HitRecord) -> bool {
-        return self.sides.hit(r, t0, t1, rec);
+        self.sides.hit(r, t0, t1, rec)
     }
 }

@@ -39,13 +39,13 @@ impl HitRecord {
     }
 
     pub fn clone_into(&self, target: &mut HitRecord) {
-        target.p = self.p.clone();
-        target.normal = self.normal.clone();
+        target.p = self.p;
+        target.normal = self.normal;
         target.mat_ptr = Arc::clone(&self.mat_ptr);
-        target.t = self.t.clone();
-        target.u = self.u.clone();
-        target.v = self.v.clone();
-        target.front_face = self.front_face.clone();
+        target.t = self.t;
+        target.u = self.u;
+        target.v = self.v;
+        target.front_face = self.front_face;
     }
 }
 
@@ -79,7 +79,7 @@ impl Hittable for Translate {
         let n = rec.normal;
         rec.set_face_normal(&moved_r, &n);
 
-        return true;
+        true
     }
 
     fn bounding_box(&self, t0: f64, t1: f64) -> (bool, AABB) {
@@ -90,7 +90,7 @@ impl Hittable for Translate {
 
         let outbox = AABB::new(&(outbox.min() + self.offset), &(outbox.max() + self.offset));
 
-        return (true, outbox);
+        (true, outbox)
     }
 }
 
@@ -139,11 +139,11 @@ impl RotateX {
         let bbox = AABB::new(&min, &max);
 
         RotateX {
-            ptr: ptr,
+            ptr,
             sin_theta: sin,
             cos_theta: cos,
-            hasbox: hasbox,
-            bbox: bbox,
+            hasbox,
+            bbox,
         }
     }
 }
@@ -177,11 +177,11 @@ impl Hittable for RotateX {
         rec.p = p;
         rec.set_face_normal(&rotated_r, &n);
 
-        return true;
+        true
     }
 
     fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
-        return (self.hasbox, self.bbox);
+        (self.hasbox, self.bbox)
     }
 }
 
@@ -230,11 +230,11 @@ impl RotateY {
         let bbox = AABB::new(&min, &max);
 
         RotateY {
-            ptr: ptr,
+            ptr,
             sin_theta: sin,
             cos_theta: cos,
-            hasbox: hasbox,
-            bbox: bbox,
+            hasbox,
+            bbox,
         }
     }
 }
@@ -268,11 +268,11 @@ impl Hittable for RotateY {
         rec.p = p;
         rec.set_face_normal(&rotated_r, &n);
 
-        return true;
+        true
     }
 
     fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
-        return (self.hasbox, self.bbox);
+        (self.hasbox, self.bbox)
     }
 }
 
@@ -321,11 +321,11 @@ impl RotateZ {
         let bbox = AABB::new(&min, &max);
 
         RotateZ {
-            ptr: ptr,
+            ptr,
             sin_theta: sin,
             cos_theta: cos,
-            hasbox: hasbox,
-            bbox: bbox,
+            hasbox,
+            bbox,
         }
     }
 }
@@ -359,10 +359,10 @@ impl Hittable for RotateZ {
         rec.p = p;
         rec.set_face_normal(&rotated_r, &n);
 
-        return true;
+        true
     }
 
     fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
-        return (self.hasbox, self.bbox);
+        (self.hasbox, self.bbox)
     }
 }

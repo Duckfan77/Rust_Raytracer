@@ -89,10 +89,10 @@ impl Hittable for ConstantMedium {
         rec.front_face = true; //Arbitrary, doesn't really apply
         rec.mat_ptr = Arc::clone(&self.phase_funct);
 
-        return true;
+        true
     }
 
     fn bounding_box(&self, t0: f64, t1: f64) -> (bool, AABB) {
-        return self.boundary.bounding_box(t0, t1);
+        self.boundary.bounding_box(t0, t1)
     }
 }

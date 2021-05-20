@@ -22,7 +22,7 @@ arg_enum! {
 
 #[derive(Debug)]
 pub enum PictureErr {
-    IOError { err: std::io::Error },
+    IoError { err: std::io::Error },
     InvalidArgs { err: String },
     ImgError { err: image::ImageError },
 }
@@ -66,7 +66,7 @@ impl Picture {
         width: u32,
         aspect_ratio: f64,
         samples_per_pixel: u32,
-        fname: &String,
+        fname: &str,
         outtype: PictureType,
     ) -> Result<Picture, PictureErr> {
         let height = (width as f64 / aspect_ratio) as u32;
@@ -90,17 +90,17 @@ impl Picture {
                 let mut file = match File::create(fname) {
                     Ok(f) => f,
 
-                    Err(e) => return Err(PictureErr::IOError { err: e }),
+                    Err(e) => return Err(PictureErr::IoError { err: e }),
                 };
 
                 //write header of ppm to file
                 match write!(file, "P3\n{} {}\n255\n", width, height) {
                     Ok(_) => {}
-                    Err(e) => return Err(PictureErr::IOError { err: e }),
+                    Err(e) => return Err(PictureErr::IoError { err: e }),
                 }
 
                 PictureBuf::Ppm {
-                    file: file,
+                    file,
                     x: 0,
                     y: 0,
                 }
@@ -116,11 +116,11 @@ impl Picture {
         };
 
         Ok(Picture {
-            width: width,
-            aspect_ratio: aspect_ratio,
+            width,
+            aspect_ratio,
             samples: samples_per_pixel,
-            fname: fname.clone(),
-            img: img,
+            fname: fname.to_string(),
+            img,
         })
     }
 
@@ -134,7 +134,7 @@ impl Picture {
      * Upon completion, Ppm image y is incremented by 1
      * Writes to disk at this step, Ppm pixels are not later mutable
      */
-    pub fn write_row(&mut self, row: &Vec<Color>, row_num: u32) -> Result<(), PictureErr> {
+    pub fn write_row(&mut self, row: &[Color], row_num: u32) -> Result<(), PictureErr> {
         if row.len() != self.width as usize {
             return Err(PictureErr::InvalidArgs {
                 err: "Row Length Does Not Match Image Width".to_string(),
@@ -252,7 +252,7 @@ impl Picture {
             PictureBuf::Ppm { ref mut file, .. } => match file.flush() {
                 Ok(_) => {}
 
-                Err(e) => return Err(PictureErr::IOError { err: e }),
+                Err(e) => return Err(PictureErr::IoError { err: e }),
             },
 
             PictureBuf::Rgb8 { ref mut buf } => match buf.save(&self.fname) {

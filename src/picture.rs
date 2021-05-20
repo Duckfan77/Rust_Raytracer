@@ -99,11 +99,7 @@ impl Picture {
                     Err(e) => return Err(PictureErr::IoError { err: e }),
                 }
 
-                PictureBuf::Ppm {
-                    file,
-                    x: 0,
-                    y: 0,
-                }
+                PictureBuf::Ppm { file, x: 0, y: 0 }
             }
 
             PictureType::Rgb8 => PictureBuf::Rgb8 {

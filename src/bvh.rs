@@ -70,11 +70,7 @@ impl BvhNode {
 
         bbox = surrounding_box(&box_left, &box_right);
 
-        BvhNode {
-            left,
-            right,
-            bbox,
-        }
+        BvhNode { left, right, bbox }
     }
 }
 

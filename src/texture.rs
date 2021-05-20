@@ -179,9 +179,7 @@ impl MarbleNoiseTexture {
 
 impl Texture for MarbleNoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: &Point) -> Color {
-        self.color
-            * 0.5
-            * (1.0 + f64::sin(self.scale * p.z() + 10.0 * self.noise.turb(p, 7)))
+        self.color * 0.5 * (1.0 + f64::sin(self.scale * p.z() + 10.0 * self.noise.turb(p, 7)))
     }
 }
 
@@ -329,7 +327,11 @@ impl Texture for FragmentNoiseTexture {
         let v = self.fragment_noise.noise(&(self.mask_scale * *p));
         ln &= !(self.frag_range_bot < v && self.frag_range_top > v);
 
-        if ln { self.ln_color } else { self.bg_color }
+        if ln {
+            self.ln_color
+        } else {
+            self.bg_color
+        }
     }
 }
 

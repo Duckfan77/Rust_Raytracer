@@ -1,4 +1,10 @@
-#![allow(dead_code, clippy::too_many_arguments, clippy::upper_case_acronyms, clippy::suspicious_operation_groupings, clippy::many_single_char_names)]
+#![allow(
+    dead_code,
+    clippy::too_many_arguments,
+    clippy::upper_case_acronyms,
+    clippy::suspicious_operation_groupings,
+    clippy::many_single_char_names
+)]
 
 use rayon::prelude::*;
 use std::f64;
@@ -145,7 +151,7 @@ fn main() {
 
     //Collect User Values and Override Scene if user provided
     if let Ok(y) = value_t!(matches, "Image Width", u32) {
-        if matches.occurrences_of("Image Width") != 0{
+        if matches.occurrences_of("Image Width") != 0 {
             scene_dat.image_width = y
         }
     }
@@ -159,8 +165,6 @@ fn main() {
     if let Ok(y) = value_t!(matches, "Bounce Depth", u32) {
         max_depth = y
     }
-
-    println!("{} {} {}", scene_dat.image_width, scene_dat.sample_per_pixel, max_depth);
 
     // Camera
     let cam = camera::Camera::new(

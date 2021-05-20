@@ -13,11 +13,7 @@ pub struct Vec3 {
 #[allow(dead_code)]
 impl Vec3 {
     pub fn new(e0: f64, e1: f64, e2: f64) -> Vec3 {
-        Vec3 {
-            e0,
-            e1,
-            e2,
-        }
+        Vec3 { e0, e1, e2 }
     }
 
     pub fn new_e() -> Vec3 {
@@ -222,7 +218,7 @@ impl Div<f64> for Vec3 {
     type Output = Vec3;
 
     fn div(self, t: f64) -> Self::Output {
-       (1.0 / t) * self
+        (1.0 / t) * self
     }
 }
 

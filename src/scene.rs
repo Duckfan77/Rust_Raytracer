@@ -96,7 +96,7 @@ fn random_scene() -> hittable_list::HittableList {
     //let mut out = hittable_list::HittableList {objects: Vec::with_capacity(10)};
     world.add(Arc::new(bvh::BvhNode::new_l(&mut spheres, 0.0, 1.0)));
 
-    return world;
+    world
 }
 
 fn two_spheres() -> hittable_list::HittableList {
@@ -120,7 +120,7 @@ fn two_spheres() -> hittable_list::HittableList {
         Arc::new(Lambertian::new_txtr(&checker)),
     )));
 
-    return objects;
+    objects
 }
 
 fn two_perlin_spheres() -> hittable_list::HittableList {
@@ -142,7 +142,7 @@ fn two_perlin_spheres() -> hittable_list::HittableList {
         Arc::new(Lambertian::new_txtr(&pertext)),
     )));
 
-    return objects;
+    objects
 }
 
 fn earth() -> hittable_list::HittableList {
@@ -155,7 +155,7 @@ fn earth() -> hittable_list::HittableList {
         Arc::clone(&earth_surface),
     ));
 
-    return hittable_list::HittableList::new(globe);
+    hittable_list::HittableList::new(globe)
 }
 
 fn simple_light() -> hittable_list::HittableList {
@@ -192,7 +192,7 @@ fn simple_light() -> hittable_list::HittableList {
     )));
     //objects.add(Arc::new(sphere::Sphere::new(Point::new(0.0, 7.0, 0.0), 2.0, Arc::clone(&difflight))));
 
-    return objects;
+    objects
 }
 
 fn cornell_box() -> hittable_list::HittableList {
@@ -276,7 +276,7 @@ fn cornell_box() -> hittable_list::HittableList {
     box2 = Arc::new(Translate::new(box2, &Vec3::new(130.0, 0.0, 65.0)));
     objects.add(box2);
 
-    return objects;
+    objects
 }
 
 fn cornell_smoke() -> hittable_list::HittableList {
@@ -369,7 +369,7 @@ fn cornell_smoke() -> hittable_list::HittableList {
         Color::new(1.0, 1.0, 1.0),
     )));
 
-    return objects;
+    objects
 }
 
 fn final_scene() -> hittable_list::HittableList {
@@ -495,7 +495,7 @@ fn final_scene() -> hittable_list::HittableList {
         &Vec3::new(-100.0, 270.0, 395.0),
     )));
 
-    return objects;
+    objects
 }
 
 fn glow_earth() -> hittable_list::HittableList {
@@ -517,7 +517,7 @@ fn glow_earth() -> hittable_list::HittableList {
         Arc::new(Lambertian::new(Color::new(1.0, 1.0, 1.0)));
     //objects.add(Arc::new(aarect::YZRect))
 
-    return objects;
+    objects
 }
 
 fn bg() -> hittable_list::HittableList {
@@ -552,7 +552,7 @@ fn bg() -> hittable_list::HittableList {
         0.0, 6.0, -3.0, 3.0, -4.0, wall,
     )));
 
-    return objects;
+    objects
 }
 
 fn pandorba() -> hittable_list::HittableList {
@@ -590,7 +590,7 @@ fn pandorba() -> hittable_list::HittableList {
     //let _fog: Arc<dyn Hittable + Sync + Send> = Arc::new(sphere::Sphere::new(Point::new(0.0, 3.0, 0.0), 10.0, Arc::new(Lambertian::new(Color::new_e()))));
     //objects.add(Arc::new(constant_medium::ConstantMedium::new(_fog, 0.1, Color::new(1.0, 1.0, 1.0))));
 
-    return objects;
+    objects
 }
 
 fn noises() -> hittable_list::HittableList {
@@ -618,7 +618,7 @@ fn noises() -> hittable_list::HittableList {
         Arc::new(Lambertian::new_txtr(&marble)),
     )));
 
-    return objects;
+    objects
 }
 
 arg_enum! {
@@ -772,5 +772,5 @@ pub fn match_scene(scene: Scene, scene_dat: &mut SceneData) -> hittable_list::Hi
         }
     };
 
-    return world;
+    world
 }

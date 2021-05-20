@@ -20,12 +20,12 @@ impl Debug for dyn Material {
 }
 
 pub struct NoHit {
-    a: u32,
+    _a: u32,
 }
 
 impl NoHit {
     pub fn new() -> NoHit {
-        NoHit { a: 0 }
+        NoHit { _a: 0 }
     }
 }
 

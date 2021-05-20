@@ -1,3 +1,4 @@
+#![warn(clippy::all)]
 #![allow(
     dead_code,
     clippy::too_many_arguments,

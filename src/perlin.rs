@@ -12,8 +12,8 @@ pub struct Perlin {
 impl Perlin {
     pub fn new() -> Perlin {
         let mut ranvec = [Vec3::new_e(); POINT_COUNT];
-        for i in 0..POINT_COUNT {
-            ranvec[i] = unit_vector(vec3::random_range(-1.0, 1.0));
+        for vec in ranvec.iter_mut().take(POINT_COUNT) {
+            *vec = unit_vector(vec3::random_range(-1.0, 1.0));
         }
 
         let perm_x = perlin_generate_perm();
@@ -21,10 +21,10 @@ impl Perlin {
         let perm_z = perlin_generate_perm();
 
         Perlin {
-            ranvec: ranvec,
-            perm_x: perm_x,
-            perm_y: perm_y,
-            perm_z: perm_z,
+            ranvec,
+            perm_x,
+            perm_y,
+            perm_z,
         }
     }
 
@@ -51,12 +51,12 @@ impl Perlin {
             }
         }
 
-        return perlin_interp(c, u, v, w);
+        perlin_interp(c, u, v, w)
     }
 
     pub fn turb(&self, p: &Point, depth: i32) -> f64 {
         let mut accum = 0.0;
-        let mut temp_p = p.clone();
+        let mut temp_p = *p;
         let mut weight = 1.0;
 
         for _ in 0..depth {
@@ -65,28 +65,26 @@ impl Perlin {
             temp_p *= 2.0;
         }
 
-        return f64::abs(accum);
+        f64::abs(accum)
     }
 }
 
 fn perlin_generate_perm() -> [i32; POINT_COUNT] {
     let mut p = [0i32; POINT_COUNT];
 
-    for i in 0..POINT_COUNT {
-        p[i] = i as i32;
+    for (i, pi) in p.iter_mut().enumerate().take(POINT_COUNT) {
+        *pi = i as i32;
     }
 
     permute(&mut p, POINT_COUNT as usize);
 
-    return p;
+    p
 }
 
 fn permute(p: &mut [i32; POINT_COUNT], n: usize) {
     for i in (1..n).rev() {
         let target = random_int_range(0, i as i32) as usize;
-        let tmp = p[i];
-        p[i] = p[target];
-        p[target] = tmp;
+        p.swap(i, target);
     }
 }
 
@@ -96,19 +94,19 @@ fn perlin_interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
     let ww = w * w * (3.0 - 2.0 * w);
     let mut accum = 0.0;
 
-    for i in 0..2 {
-        for j in 0..2 {
-            for k in 0..2 {
+    for (i, ci) in c.iter().enumerate() {
+        for (j, cij) in ci.iter().enumerate() {
+            for (k, cijk) in cij.iter().enumerate() {
                 let weight_v = Vec3::new(u - i as f64, v - j as f64, w - k as f64);
                 accum += (i as f64 * uu + (1.0 - i as f64) * (1.0 - uu))
                     * (j as f64 * vv + (1.0 - j as f64) * (1.0 - vv))
                     * (k as f64 * ww + (1.0 - k as f64) * (1.0 - ww))
-                    * dot(c[i][j][k], weight_v);
+                    * dot(*cijk, weight_v);
             }
         }
     }
 
-    return accum;
+    accum
 }
 
 fn trilinear_interp(c: [[[f64; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
@@ -124,5 +122,5 @@ fn trilinear_interp(c: [[[f64; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
         }
     }
 
-    return accum;
+    accum
 }

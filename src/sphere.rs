@@ -25,15 +25,16 @@ pub fn get_sphere_uv(p: &Vec3) -> (f64, f64) {
     let theta = f64::asin(p.y());
     let u = 1.0 - (phi + PI) / (2.0 * PI);
     let v = (theta + PI / 2.0) / PI;
-    return (u, v);
+    (u, v)
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
-        let oc: Vec3 = r.origin() - self.center;
-        let a = r.direction().length_squared();
-        let half_b = dot(oc, r.direction());
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+        let oc: Vec3 = ray.origin() - self.center;
+        let a = ray.direction().length_squared();
+        let half_b = dot(oc, ray.direction());
         let c = oc.length_squared() - self.radius * self.radius;
+        //Calculate 1/4 of the discriminant, b/2 * b/2 = b/4, allowing us to remove the 4 from the - 4ac, this gets caught by clippy, isn't a bug
         let discriminant = half_b * half_b - a * c;
 
         if discriminant > 0.0 {
@@ -42,9 +43,9 @@ impl Hittable for Sphere {
             let temp = (-half_b - root) / a;
             if temp < t_max && temp > t_min {
                 rec.t = temp;
-                rec.p = r.at(rec.t);
+                rec.p = ray.at(rec.t);
                 let outward_normal = (rec.p - self.center) / self.radius;
-                rec.set_face_normal(&r, &outward_normal);
+                rec.set_face_normal(&ray, &outward_normal);
                 let (u, v) = get_sphere_uv(&((rec.p - self.center) / self.radius));
                 rec.u = u;
                 rec.v = v;
@@ -55,9 +56,9 @@ impl Hittable for Sphere {
             let temp = (-half_b + root) / a;
             if temp < t_max && temp > t_min {
                 rec.t = temp;
-                rec.p = r.at(rec.t);
+                rec.p = ray.at(rec.t);
                 let outward_normal = (rec.p - self.center) / self.radius;
-                rec.set_face_normal(&r, &outward_normal);
+                rec.set_face_normal(&ray, &outward_normal);
                 let (u, v) = get_sphere_uv(&((rec.p - self.center) / self.radius));
                 rec.u = u;
                 rec.v = v;
@@ -66,7 +67,7 @@ impl Hittable for Sphere {
             }
         }
 
-        return false;
+        false
     }
 
     fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
@@ -74,6 +75,6 @@ impl Hittable for Sphere {
             &(self.center - Vec3::new(self.radius, self.radius, self.radius)),
             &(self.center + Vec3::new(self.radius, self.radius, self.radius)),
         );
-        return (true, out_box);
+        (true, out_box)
     }
 }

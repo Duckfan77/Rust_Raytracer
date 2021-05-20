@@ -38,7 +38,7 @@ impl Hittable for HittableList {
             }
         }
 
-        return hit_anything;
+        hit_anything
     }
 
     fn bounding_box(&self, t0: f64, t1: f64) -> (bool, AABB) {
@@ -64,6 +64,6 @@ impl Hittable for HittableList {
             first_box = false;
         }
 
-        return (true, out_box);
+        (true, out_box)
     }
 }

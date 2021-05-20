@@ -14,18 +14,18 @@ fn convert_pixel(pixel: vec3::Color, sample_count: u32) -> (f64, f64, f64) {
     g = f64::sqrt(scale * g);
     b = f64::sqrt(scale * b);
 
-    return (r, g, b);
+    (r, g, b)
 }
 
 #[allow(dead_code)]
-pub fn write_color_ppm(out: &mut impl io::Write, pixel: vec3::Color, sample_count: u32) -> () {
+pub fn write_color_ppm(out: &mut impl io::Write, pixel: vec3::Color, sample_count: u32) {
     let (r, g, b) = convert_pixel(pixel, sample_count);
 
     let max_color = std::u8::MAX as f64 + 1.0;
 
-    let _ = write!(
+    let _ = writeln!(
         out,
-        "{} {} {}\n",
+        "{} {} {}",
         (max_color * clamp(r, 0.0, 0.999)) as u32,
         (max_color * clamp(g, 0.0, 0.999)) as u32,
         (max_color * clamp(b, 0.0, 0.999)) as u32
@@ -39,9 +39,9 @@ pub fn write_pixel_str_ppm<T: fmt::Write>(out: &mut T, pixel: vec3::Color, sampl
 
     let max_color = std::u8::MAX as f64 + 1.0;
 
-    let _ = write!(
+    let _ = writeln!(
         out,
-        "{} {} {}\n",
+        "{} {} {}",
         (max_color * clamp(r, 0.0, 0.999)) as u32,
         (max_color * clamp(g, 0.0, 0.999)) as u32,
         (max_color * clamp(b, 0.0, 0.999)) as u32

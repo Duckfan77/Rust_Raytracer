@@ -29,12 +29,10 @@ impl BvhNode {
         let axis = random_int_range(0, 2);
         let comparator = if axis == 0 {
             box_x_compare
+        } else if axis == 1 {
+            box_y_compare
         } else {
-            if axis == 1 {
-                box_y_compare
-            } else {
-                box_z_compare
-            }
+            box_z_compare
         };
 
         let object_span: usize = end - start;
@@ -64,8 +62,8 @@ impl BvhNode {
         let (bbool, box_right) = right.bounding_box(time0, time1);
 
         if !abool || !bbool {
-            eprint!(
-                "No bounding box in BvhNode constructor. L:{:?}, R:{:?}\n",
+            eprintln!(
+                "No bounding box in BvhNode constructor. L:{:?}, R:{:?}",
                 box_left, box_right
             );
         }
@@ -73,9 +71,9 @@ impl BvhNode {
         bbox = surrounding_box(&box_left, &box_right);
 
         BvhNode {
-            left: left,
-            right: right,
-            bbox: bbox,
+            left,
+            right,
+            bbox,
         }
     }
 }
@@ -91,7 +89,7 @@ impl Hittable for BvhNode {
             .right
             .hit(r, t_min, if hit_left { rec.t } else { t_max }, rec);
 
-        return hit_left || hit_right;
+        hit_left || hit_right
     }
 
     fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
@@ -108,7 +106,7 @@ pub fn box_compare(
     let (bbool, box_b) = b.bounding_box(0.0, 0.0);
 
     if !abool || !bbool {
-        eprint!("No bounding box in BvhNode constructor.\n");
+        eprintln!("No bounding box in BvhNode constructor.");
     }
 
     match f64::partial_cmp(&box_a.min()[axis], &box_b.min()[axis]) {
@@ -121,19 +119,19 @@ pub fn box_x_compare(
     a: Arc<dyn Hittable + Sync + Send>,
     b: Arc<dyn Hittable + Sync + Send>,
 ) -> Ordering {
-    return box_compare(a, b, 0);
+    box_compare(a, b, 0)
 }
 
 pub fn box_y_compare(
     a: Arc<dyn Hittable + Sync + Send>,
     b: Arc<dyn Hittable + Sync + Send>,
 ) -> Ordering {
-    return box_compare(a, b, 1);
+    box_compare(a, b, 1)
 }
 
 pub fn box_z_compare(
     a: Arc<dyn Hittable + Sync + Send>,
     b: Arc<dyn Hittable + Sync + Send>,
 ) -> Ordering {
-    return box_compare(a, b, 2);
+    box_compare(a, b, 2)
 }

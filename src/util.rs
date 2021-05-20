@@ -35,5 +35,5 @@ pub fn clamp(x: f64, min: f64, max: f64) -> f64 {
     if x > max {
         return max;
     }
-    return x;
+    x
 }

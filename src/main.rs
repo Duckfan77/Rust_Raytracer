@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+#![allow(dead_code, clippy::too_many_arguments, clippy::upper_case_acronyms, clippy::suspicious_operation_groupings, clippy::many_single_char_names)]
 
 use rayon::prelude::*;
 use std::f64;

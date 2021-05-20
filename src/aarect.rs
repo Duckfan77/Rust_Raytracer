@@ -22,11 +22,11 @@ impl XYRect {
     ) -> XYRect {
         XYRect {
             mat_ptr: mat,
-            x0: x0,
-            x1: x1,
-            y0: y0,
-            y1: y1,
-            k: k,
+            x0,
+            x1,
+            y0,
+            y1,
+            k,
         }
     }
 }
@@ -51,7 +51,7 @@ impl Hittable for XYRect {
         rec.set_face_normal(r, &outward_normal);
         rec.mat_ptr = Arc::clone(&self.mat_ptr);
         rec.p = r.at(t);
-        return true;
+        true
     }
 
     fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
@@ -60,7 +60,7 @@ impl Hittable for XYRect {
             &Point::new(self.x0, self.y0, self.k - 0.0001),
             &Point::new(self.x1, self.y1, self.k + 0.001),
         );
-        return (true, outbox);
+        (true, outbox)
     }
 }
 
@@ -84,11 +84,11 @@ impl XZRect {
     ) -> XZRect {
         XZRect {
             mat_ptr: mat,
-            x0: x0,
-            x1: x1,
-            z0: z0,
-            z1: z1,
-            k: k,
+            x0,
+            x1,
+            z0,
+            z1,
+            k,
         }
     }
 }
@@ -113,7 +113,7 @@ impl Hittable for XZRect {
         rec.set_face_normal(r, &outward_normal);
         rec.mat_ptr = Arc::clone(&self.mat_ptr);
         rec.p = r.at(t);
-        return true;
+        true
     }
 
     fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
@@ -122,7 +122,7 @@ impl Hittable for XZRect {
             &Point::new(self.x0, self.k - 0.0001, self.z0),
             &Point::new(self.x1, self.k + 0.001, self.z1),
         );
-        return (true, outbox);
+        (true, outbox)
     }
 }
 
@@ -146,11 +146,11 @@ impl YZRect {
     ) -> YZRect {
         YZRect {
             mat_ptr: mat,
-            y0: y0,
-            y1: y1,
-            z0: z0,
-            z1: z1,
-            k: k,
+            y0,
+            y1,
+            z0,
+            z1,
+            k,
         }
     }
 }
@@ -175,7 +175,7 @@ impl Hittable for YZRect {
         rec.set_face_normal(r, &outward_normal);
         rec.mat_ptr = Arc::clone(&self.mat_ptr);
         rec.p = r.at(t);
-        return true;
+        true
     }
 
     fn bounding_box(&self, _t0: f64, _t1: f64) -> (bool, AABB) {
@@ -184,6 +184,6 @@ impl Hittable for YZRect {
             &Point::new(self.k - 0.0001, self.y0, self.z0),
             &Point::new(self.k + 0.001, self.y1, self.z1),
         );
-        return (true, outbox);
+        (true, outbox)
     }
 }

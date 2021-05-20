@@ -1,12 +1,4 @@
-use crate::{
-    hittable::*,
-    materials::*,
-    texture::*,
-    vec3::*,
-    ray::Ray,
-    aabb::AABB,
-    util::*,
-};
+use crate::{aabb::AABB, hittable::*, materials::*, ray::Ray, texture::*, util::*, vec3::*};
 
 use std::sync::Arc;
 
@@ -17,11 +9,15 @@ pub struct ConstantMedium {
 }
 
 impl ConstantMedium {
-    pub fn new_txtr(b: Arc<dyn Hittable + Sync + Send>, d: f64, a: Arc<dyn Texture + Sync + Send>) -> ConstantMedium {
+    pub fn new_txtr(
+        b: Arc<dyn Hittable + Sync + Send>,
+        d: f64,
+        a: Arc<dyn Texture + Sync + Send>,
+    ) -> ConstantMedium {
         ConstantMedium {
             boundary: b,
             phase_funct: Arc::new(Isotropic::new_txtr(a)),
-            neg_inv_density: -1.0/d,
+            neg_inv_density: -1.0 / d,
         }
     }
 
@@ -29,7 +25,7 @@ impl ConstantMedium {
         ConstantMedium {
             boundary: b,
             phase_funct: Arc::new(Isotropic::new(c)),
-            neg_inv_density: -1.0/d,
+            neg_inv_density: -1.0 / d,
         }
     }
 }
@@ -45,11 +41,11 @@ impl Hittable for ConstantMedium {
         let mut rec2 = HitRecord::new();
 
         if !self.boundary.hit(r, -INFINITY, INFINITY, &mut rec1) {
-            return false
+            return false;
         }
 
-        if !self.boundary.hit(r, rec1.t+0.001, INFINITY, &mut rec2) {
-            return false
+        if !self.boundary.hit(r, rec1.t + 0.001, INFINITY, &mut rec2) {
+            return false;
         }
 
         if debugging {
@@ -64,7 +60,7 @@ impl Hittable for ConstantMedium {
         }
 
         if rec1.t >= rec2.t {
-            return false
+            return false;
         }
 
         if rec1.t < 0.0 {
@@ -76,24 +72,27 @@ impl Hittable for ConstantMedium {
         let hit_dist = self.neg_inv_density * f64::log(random_double(), E);
 
         if hit_dist > dist_inside_boundary {
-            return false
+            return false;
         }
 
         rec.t = rec1.t + hit_dist / ray_len;
         rec.p = r.at(rec.t);
 
         if debugging {
-            eprint!("hit_dist = {}\nrec.t = {}\nrec.p = {}\n", hit_dist, rec.t, rec.p);
+            eprint!(
+                "hit_dist = {}\nrec.t = {}\nrec.p = {}\n",
+                hit_dist, rec.t, rec.p
+            );
         }
 
-        rec.normal = Vec3::new(1.0, 0.0, 0.0);  //Arbitrary, doesn't really apply
-        rec.front_face = true;                  //Arbitrary, doesn't really apply
+        rec.normal = Vec3::new(1.0, 0.0, 0.0); //Arbitrary, doesn't really apply
+        rec.front_face = true; //Arbitrary, doesn't really apply
         rec.mat_ptr = Arc::clone(&self.phase_funct);
 
-        return true
+        return true;
     }
 
     fn bounding_box(&self, t0: f64, t1: f64) -> (bool, AABB) {
-        return self.boundary.bounding_box(t0, t1)
+        return self.boundary.bounding_box(t0, t1);
     }
 }

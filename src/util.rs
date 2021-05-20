@@ -1,4 +1,3 @@
-
 // Constants
 pub const INFINITY: f64 = f64::INFINITY;
 pub const PI: f64 = std::f64::consts::PI;
@@ -31,10 +30,10 @@ pub fn random_int_range(min: i32, max: i32) -> i32 {
 
 pub fn clamp(x: f64, min: f64, max: f64) -> f64 {
     if x < min {
-        return min
+        return min;
     }
     if x > max {
-        return max
+        return max;
     }
-    return x
+    return x;
 }

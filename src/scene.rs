@@ -738,7 +738,7 @@ pub fn match_scene(scene: Scene, scene_dat: &mut SceneData) -> hittable_list::Hi
         }
 
         Scene::Earth2 => {
-            world = earth();
+            world = glow_earth();
             scene_dat.background = Color::new(0.0, 0.0, 0.00);
             scene_dat.lookfrom = Point::new(13.0, 2.0, 3.0);
             scene_dat.lookat = Point::new(0.0, 0.0, 0.0);

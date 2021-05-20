@@ -31,11 +31,11 @@ impl NoHit {
 
 impl Material for NoHit {
     fn scatter(&self, _r_in: &Ray, _rec: &HitRecord) -> (bool, Ray, Color) {
-        return (
+        (
             false,
             Ray::new(&Point::new_e(), &Vec3::new_e(), 0.0),
             Color::new_e(),
-        );
+        )
     }
 }
 
@@ -63,7 +63,7 @@ impl Material for Lambertian {
         let scatter_dir = rec.normal + random_unit_vector();
         let scat = Ray::new(&rec.p, &scatter_dir, r_in.time());
         let atten = self.albedo.value(rec.u, rec.v, &rec.p);
-        return (true, scat, atten);
+        (true, scat, atten)
     }
 }
 
@@ -90,11 +90,11 @@ impl Material for Metal {
             r_in.time(),
         );
         let atten = self.albedo;
-        return (
+        (
             dot(scattered.direction(), rec.normal) > 0.0,
             scattered,
             atten,
-        );
+        )
     }
 }
 
@@ -110,7 +110,7 @@ impl Dialectric {
     fn schlick(cos: f64, ref_idx: f64) -> f64 {
         let r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
         let r0 = r0 * r0;
-        return r0 + (1.0 - r0) * (1.0 - cos).powf(5.0);
+        r0 + (1.0 - r0) * (1.0 - cos).powf(5.0)
     }
 }
 
@@ -166,15 +166,15 @@ impl DiffuseLight {
 
 impl Material for DiffuseLight {
     fn scatter(&self, _r_in: &Ray, _rec: &HitRecord) -> (bool, Ray, Color) {
-        return (
+        (
             false,
             Ray::new(&Point::new_e(), &Vec3::new_e(), 0.0),
             Color::new_e(),
-        );
+        )
     }
 
     fn emitted(&self, u: f64, v: f64, p: &Point) -> Color {
-        return self.emit.value(u, v, p);
+        self.emit.value(u, v, p)
     }
 }
 
@@ -198,6 +198,6 @@ impl Material for Isotropic {
     fn scatter(&self, r_in: &Ray, rec: &HitRecord) -> (bool, Ray, Color) {
         let scattered = Ray::new(&rec.p, &random_in_unit_sphere(), r_in.time());
         let atten = self.albedo.value(rec.u, rec.v, &rec.p);
-        return (true, scattered, atten);
+        (true, scattered, atten)
     }
 }

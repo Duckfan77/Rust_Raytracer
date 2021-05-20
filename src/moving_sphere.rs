@@ -32,8 +32,8 @@ impl MovingSphere {
     }
 
     pub fn center(&self, time: f64) -> Point {
-        return self.center0
-            + ((time - self.time0) / (self.time1 - self.time0)) * (self.center1 - self.center0);
+        self.center0
+            + ((time - self.time0) / (self.time1 - self.time0)) * (self.center1 - self.center0)
     }
 }
 
@@ -43,6 +43,7 @@ impl Hittable for MovingSphere {
         let a = r.direction().length_squared();
         let half_b = dot(oc, r.direction());
         let c = oc.length_squared() - self.radius * self.radius;
+        //Calculate 1/4 of the discriminant, b/2 * b/2 = b/4, allowing us to remove the 4 from the - 4ac, this gets caught by clippy, isn't a bug
         let discriminant = half_b * half_b - a * c;
 
         if discriminant > 0.0 {
@@ -69,7 +70,7 @@ impl Hittable for MovingSphere {
             }
         }
 
-        return false;
+        false
     }
 
     fn bounding_box(&self, t0: f64, t1: f64) -> (bool, AABB) {
@@ -83,6 +84,6 @@ impl Hittable for MovingSphere {
         );
 
         let out_box = surrounding_box(&box0, &box1);
-        return (true, out_box);
+        (true, out_box)
     }
 }

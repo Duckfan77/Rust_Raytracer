@@ -13,19 +13,19 @@ pub struct Vec3 {
 #[allow(dead_code)]
 impl Vec3 {
     pub fn new(e0: f64, e1: f64, e2: f64) -> Vec3 {
-        return Vec3 {
-            e0: e0,
-            e1: e1,
-            e2: e2,
-        };
+        Vec3 {
+            e0,
+            e1,
+            e2,
+        }
     }
 
     pub fn new_e() -> Vec3 {
-        return Vec3 {
+        Vec3 {
             e0: 0.0,
             e1: 0.0,
             e2: 0.0,
-        };
+        }
     }
 
     pub fn x(self) -> f64 {
@@ -41,11 +41,11 @@ impl Vec3 {
     }
 
     pub fn length(self) -> f64 {
-        return f64::sqrt(self.length_squared());
+        f64::sqrt(self.length_squared())
     }
 
     pub fn length_squared(self) -> f64 {
-        return self.e0 * self.e0 + self.e1 * self.e1 + self.e2 * self.e2;
+        self.e0 * self.e0 + self.e1 * self.e1 + self.e2 * self.e2
     }
 }
 
@@ -74,7 +74,7 @@ pub fn random_unit_vector() -> Vec3 {
     let a = random_double_range(0.0, 2.0 * PI);
     let z = random_double_range(-1.0, 1.0);
     let r = f64::sqrt(1.0 - z * z);
-    return Vec3::new(r * a.cos(), r * a.sin(), z);
+    Vec3::new(r * a.cos(), r * a.sin(), z)
 }
 
 pub fn random_in_unit_disk() -> Vec3 {
@@ -92,37 +92,37 @@ pub fn random_in_unit_disk() -> Vec3 {
 
 /// reflects a vector impacting a mirrored surface with normal n. The normal is assumed to be a unit vector. Returns the reflected vector.
 pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
-    return *v - 2.0 * dot(*v, *n) * *n;
+    *v - 2.0 * dot(*v, *n) * *n
 }
 
 pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
     let cos_theta = dot(-*uv, *n);
     let r_out_perp = etai_over_etat * (*uv + cos_theta * *n);
     let r_out_parl = -f64::sqrt((1.0 - r_out_perp.length_squared()).abs()) * *n;
-    return r_out_perp + r_out_parl;
+    r_out_perp + r_out_parl
 }
 
 pub fn dot(u: Vec3, v: Vec3) -> f64 {
-    return u.e0 * v.e0 + u.e1 * v.e1 + u.e2 * v.e2;
+    u.e0 * v.e0 + u.e1 * v.e1 + u.e2 * v.e2
 }
 
 pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
-    return Vec3::new(
+    Vec3::new(
         u.e1 * v.e2 - u.e2 * v.e1,
         u.e2 * v.e0 - u.e0 * v.e2,
         u.e0 * v.e1 - u.e1 * v.e0,
-    );
+    )
 }
 
 pub fn unit_vector(v: Vec3) -> Vec3 {
-    return v / v.length();
+    v / v.length()
 }
 
 impl Neg for Vec3 {
     type Output = Vec3;
 
     fn neg(self) -> Self::Output {
-        return Vec3::new(-self.e0, -self.e1, -self.e2);
+        Vec3::new(-self.e0, -self.e1, -self.e2)
     }
 }
 
@@ -182,7 +182,7 @@ impl Add for Vec3 {
     type Output = Self;
 
     fn add(self, v: Vec3) -> Self::Output {
-        return Vec3::new(self.e0 + v.e0, self.e1 + v.e1, self.e2 + v.e2);
+        Vec3::new(self.e0 + v.e0, self.e1 + v.e1, self.e2 + v.e2)
     }
 }
 
@@ -190,7 +190,7 @@ impl Sub for Vec3 {
     type Output = Self;
 
     fn sub(self, v: Vec3) -> Self::Output {
-        return Vec3::new(self.e0 - v.e0, self.e1 - v.e1, self.e2 - v.e2);
+        Vec3::new(self.e0 - v.e0, self.e1 - v.e1, self.e2 - v.e2)
     }
 }
 
@@ -206,7 +206,7 @@ impl Mul<Vec3> for f64 {
     type Output = Vec3;
 
     fn mul(self, v: Vec3) -> Vec3 {
-        return Vec3::new(self * v.e0, self * v.e1, self * v.e2);
+        Vec3::new(self * v.e0, self * v.e1, self * v.e2)
     }
 }
 
@@ -222,7 +222,7 @@ impl Div<f64> for Vec3 {
     type Output = Vec3;
 
     fn div(self, t: f64) -> Self::Output {
-        return (1.0 / t) * self;
+       (1.0 / t) * self
     }
 }
 

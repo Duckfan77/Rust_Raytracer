@@ -37,6 +37,7 @@ use vec3::*;
 
 #[macro_use]
 extern crate clap;
+extern crate nalgebra as na;
 use clap::{App, Arg};
 
 fn ray_color(

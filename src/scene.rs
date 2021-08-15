@@ -35,19 +35,19 @@ fn random_scene() -> hittable_list::HittableList {
             if (center - Point::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 let mat_sphere: Arc<dyn Material + Sync + Send>;
 
-                if choose_mat < 0.5 {
+                if choose_mat < 0.8 {
                     // difuse
                     let albedo = random() * random();
                     mat_sphere = Arc::new(Lambertian::new(albedo));
-                    let center2 = center + Vec3::new(0.0, random_double_range(0.0, 0.5), 0.0);
-                    if choose_mat < 0.25 {
+                    if choose_mat < 0.1 {
+                        let center2 = center + Vec3::new(0.0, random_double_range(0.0, 0.5), 0.0);
                         spheres.add(Arc::new(moving_sphere::MovingSphere::new(
                             center, center2, 0.0, 1.0, 0.2, mat_sphere,
                         )));
                     } else {
                         spheres.add(Arc::new(sphere::Sphere::new(center, 0.2, mat_sphere)))
                     }
-                } else if choose_mat < 0.75 {
+                } else if choose_mat < 0.9 {
                     // metal
                     let albedo = random_range(0.5, 1.0);
                     let fuzz = random_double_range(0.0, 0.5);
@@ -670,6 +670,7 @@ pub fn match_scene(scene: Scene, scene_dat: &mut SceneData) -> hittable_list::Hi
             scene_dat.lookat = Point::new(0.0, 0.0, 0.0);
             scene_dat.vfov = 20.0;
             scene_dat.aperture = 0.1;
+            scene_dat.aspect_ratio = 3.0 / 2.0;
         }
 
         Scene::TwoSpheres => {

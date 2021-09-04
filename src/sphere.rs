@@ -45,7 +45,7 @@ impl Hittable for Sphere {
                 rec.t = temp;
                 rec.p = ray.at(rec.t);
                 let outward_normal = (rec.p - self.center) / self.radius;
-                rec.set_face_normal(&ray, &outward_normal);
+                rec.set_face_normal(ray, &outward_normal);
                 let (u, v) = get_sphere_uv(&((rec.p - self.center) / self.radius));
                 rec.u = u;
                 rec.v = v;
@@ -58,7 +58,7 @@ impl Hittable for Sphere {
                 rec.t = temp;
                 rec.p = ray.at(rec.t);
                 let outward_normal = (rec.p - self.center) / self.radius;
-                rec.set_face_normal(&ray, &outward_normal);
+                rec.set_face_normal(ray, &outward_normal);
                 let (u, v) = get_sphere_uv(&((rec.p - self.center) / self.radius));
                 rec.u = u;
                 rec.v = v;

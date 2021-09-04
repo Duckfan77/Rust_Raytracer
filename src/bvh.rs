@@ -51,7 +51,7 @@ impl BvhNode {
                 right = Arc::clone(&objects[start]);
             }
         } else {
-            objects.sort_unstable_by(|a, b| comparator(Arc::clone(&a), Arc::clone(&b)));
+            objects.sort_unstable_by(|a, b| comparator(Arc::clone(a), Arc::clone(b)));
 
             let mid = start + object_span / 2;
             left = Arc::new(BvhNode::new(objects, start, mid, time0, time1));

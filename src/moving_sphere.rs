@@ -54,7 +54,7 @@ impl Hittable for MovingSphere {
                 rec.t = temp;
                 rec.p = r.at(rec.t);
                 let outward_normal = (rec.p - self.center(r.time())) / self.radius;
-                rec.set_face_normal(&r, &outward_normal);
+                rec.set_face_normal(r, &outward_normal);
                 rec.mat_ptr = Arc::clone(&self.mat_ptr);
                 return true;
             }
@@ -64,7 +64,7 @@ impl Hittable for MovingSphere {
                 rec.t = temp;
                 rec.p = r.at(rec.t);
                 let outward_normal = (rec.p - self.center(r.time())) / self.radius;
-                rec.set_face_normal(&r, &outward_normal);
+                rec.set_face_normal(r, &outward_normal);
                 rec.mat_ptr = Arc::clone(&self.mat_ptr);
                 return true;
             }

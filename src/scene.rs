@@ -574,7 +574,7 @@ fn pandorba() -> hittable_list::HittableList {
         3,
         Color::new(0.0, 0.6, 0.8) * 1.0,
         Color::new(0.8, 0.8, 1.0) * 1.0,
-        -0.1,
+        -0.05,
         0.05,
         0.1,
         1.0,

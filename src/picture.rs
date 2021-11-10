@@ -254,13 +254,19 @@ impl Picture {
             PictureBuf::Rgb8 { ref mut buf } => match buf.save(&self.fname) {
                 Ok(_) => {}
 
-                Err(e) => return Err(PictureErr::ImgError { err: e }),
+                Err(e) => {
+                    let _ = buf.save("ERROR_FNAME_SAVE.png");
+                    return Err(PictureErr::ImgError { err: e });
+                }
             },
 
             PictureBuf::Rgb16 { ref mut buf } => match buf.save(&self.fname) {
                 Ok(_) => {}
 
-                Err(e) => return Err(PictureErr::ImgError { err: e }),
+                Err(e) => {
+                    let _ = buf.save("ERROR_FNAME_SAVE.png");
+                    return Err(PictureErr::ImgError { err: e });
+                }
             },
         };
 

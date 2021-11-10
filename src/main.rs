@@ -222,5 +222,5 @@ fn main() {
     }
 
     img.save().expect("Error Saving To File");
-    println!("");
+    println!();
 }

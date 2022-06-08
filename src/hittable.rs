@@ -105,12 +105,10 @@ pub struct RotateX {
 impl RotateX {
     pub fn new(p: Arc<dyn Hittable + Sync + Send>, angle: f64) -> RotateX {
         let ptr = p;
-        let sin: f64;
-        let cos: f64;
 
         let rads = degs_to_rads(angle);
-        sin = f64::sin(rads);
-        cos = f64::cos(rads);
+        let sin = f64::sin(rads);
+        let cos = f64::cos(rads);
         let (hasbox, bbox) = ptr.bounding_box(0.0, 1.0);
 
         let mut min = Point::new(INFINITY, INFINITY, INFINITY);
@@ -196,12 +194,10 @@ pub struct RotateY {
 impl RotateY {
     pub fn new(p: Arc<dyn Hittable + Sync + Send>, angle: f64) -> RotateY {
         let ptr = p;
-        let sin: f64;
-        let cos: f64;
 
         let rads = degs_to_rads(angle);
-        sin = f64::sin(rads);
-        cos = f64::cos(rads);
+        let sin = f64::sin(rads);
+        let cos = f64::cos(rads);
         let (hasbox, bbox) = ptr.bounding_box(0.0, 1.0);
 
         let mut min = Point::new(INFINITY, INFINITY, INFINITY);
@@ -287,12 +283,10 @@ pub struct RotateZ {
 impl RotateZ {
     pub fn new(p: Arc<dyn Hittable + Sync + Send>, angle: f64) -> RotateZ {
         let ptr = p;
-        let sin: f64;
-        let cos: f64;
 
         let rads = degs_to_rads(angle);
-        sin = f64::sin(rads);
-        cos = f64::cos(rads);
+        let sin = f64::sin(rads);
+        let cos = f64::cos(rads);
         let (hasbox, bbox) = ptr.bounding_box(0.0, 1.0);
 
         let mut min = Point::new(INFINITY, INFINITY, INFINITY);

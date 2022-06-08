@@ -24,7 +24,6 @@ impl BvhNode {
     ) -> BvhNode {
         let left: Arc<dyn Hittable + Sync + Send>;
         let right: Arc<dyn Hittable + Sync + Send>;
-        let bbox: AABB;
 
         let axis = random_int_range(0, 2);
         let comparator = if axis == 0 {
@@ -68,7 +67,7 @@ impl BvhNode {
             );
         }
 
-        bbox = surrounding_box(&box_left, &box_right);
+        let bbox = surrounding_box(&box_left, &box_right);
 
         BvhNode { left, right, bbox }
     }

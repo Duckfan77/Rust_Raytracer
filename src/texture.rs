@@ -348,7 +348,6 @@ impl ImageTexture {
     pub fn new(filename: &str) -> ImageTexture {
         let mut width = 0;
         let mut height = 0;
-        let bytes: i32;
         let mut data = image::RgbImage::new(width as u32, height as u32);
 
         let r = image::open(filename);
@@ -369,7 +368,7 @@ impl ImageTexture {
             }
         }
 
-        bytes = BYTES_PER_PIXEL * width;
+        let bytes = BYTES_PER_PIXEL * width;
 
         ImageTexture {
             width,

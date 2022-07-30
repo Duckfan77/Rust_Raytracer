@@ -106,7 +106,7 @@ fn main() {
         .arg(Arg::with_name("Scene Number")
             .value_name("SCENE")
             .long("scene")
-            .short("s")
+            .short('s')
             .possible_values(&scene::Scene::variants())
             .default_value("CornellBox")
             .case_insensitive(true)
@@ -114,7 +114,7 @@ fn main() {
         .arg(Arg::with_name("Image Width")
             .value_name("WIDTH")
             .long("width")
-            .short("w")
+            .short('w')
             .help("Width of the output image in pixels")
             .default_value(&iw_str)
             .validator(|x| match x.parse::<u32>(){
@@ -124,7 +124,7 @@ fn main() {
         .arg(Arg::with_name("Sample Count")
             .value_name("SAMPLES")
             .long("samples")
-            .short("c")
+            .short('c')
             .help("Samples per pixel. More generally produces a sharper image, but greatly increases render time")
             .default_value(&sc_str)
             .validator(|x| match x.parse::<u32>(){
@@ -134,7 +134,7 @@ fn main() {
         .arg(Arg::with_name("Bounce Depth")
             .value_name("DEPTH")
             .long("depth")
-            .short("d")
+            .short('d')
             .help("Maximum number of bounces permitted per ray. Diminishing returns for quality when increased, unlikely to need changing from default")
             .default_value(&md_str)
             .validator(|x| match x.parse::<u32>(){
